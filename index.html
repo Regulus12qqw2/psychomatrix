@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Квадрат Пифагора онлайн — Нумерологический расчёт психоматрицы</title>
+  <meta name="description" content="Рассчитайте свою психоматрицу по дате рождения. Квадрат Пифагора — бесплатный нумерологический расчёт с расшифровкой всех значений. Характер, энергия, таланты, здоровье.">
+  <meta name="keywords" content="квадрат Пифагора, психоматрица, нумерология, расчёт по дате рождения, квадрат судьбы, число судьбы">
+  <meta name="theme-color" content="#FAF5F8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0C0A14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Schema.org markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Квадрат Пифагора",
+    "description": "Бесплатный онлайн-расчёт психоматрицы по дате рождения с полной расшифровкой значений",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "All",
+    "url": "https://psychomatrix.app",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" }
+  }
+  </script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== Light Theme (default) ===== */
+:root, [data-theme="light"] {
+  --bg-start: #FAF5F8;
+  --bg-mid1: #F5EEF8;
+  --bg-mid2: #F8F0F2;
+  --bg-end: #F2EEF8;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-primary: #3D3244;
+  --text-secondary: #7B6E82;
+  --text-muted: #8B7A96;
+  --accent-lilac: #C8A2D3;
+  --accent-lilac-light: #E8D5EE;
+  --accent-lilac-dark: #7B5A8F;
+  --accent-lilac-mid: #D4B8E0;
+  --accent-pink: #F2C6CC;
+  --accent-pink-light: #FAE5E8;
+  --accent-pink-dark: #8B4A56;
+  --accent-pink-mid: #F5D0D6;
+  --accent-lavender: #9B8EC4;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --orb1-bg: #C8A2D3;
+  --orb2-bg: #F2C6CC;
+  --orb3-bg: #9B8EC4;
+  --orb4-bg: #B8D4E3;
+  --orb1-opacity: 0.2;
+  --orb2-opacity: 0.2;
+  --orb3-opacity: 0.15;
+  --orb4-opacity: 0.1;
+  --ring-border: #C8A2D3;
+  --ring-opacity: 0.03;
+  --input-bg: rgba(255,255,255,0.7);
+  --input-border: rgba(200,162,211,0.2);
+  --input-placeholder: rgba(200,162,211,0.4);
+  --input-focus-border: rgba(200,162,211,0.5);
+  --input-focus-bg: rgba(255,255,255,0.9);
+  --input-focus-shadow: rgba(200,162,211,0.12);
+  --btn-gradient-1: #C8A2D3;
+  --btn-gradient-2: #9B8EC4;
+  --btn-shadow: rgba(200,162,211,0.25);
+  --btn-shadow-hover: rgba(200,162,211,0.35);
+  --card-shadow: rgba(200,162,211,0.1);
+  --cell-lilac-bg-1: rgba(232,213,238,0.8);
+  --cell-lilac-bg-2: rgba(212,184,224,0.6);
+  --cell-lilac-border: rgba(200,162,211,0.3);
+  --cell-pink-bg-1: rgba(250,229,232,0.8);
+  --cell-pink-bg-2: rgba(245,208,214,0.6);
+  --cell-pink-border: rgba(242,198,204,0.3);
+  --cell-date-bg-1: rgba(232,213,238,0.3);
+  --cell-date-bg-2: rgba(250,229,232,0.3);
+  --cell-date-border: rgba(200,162,211,0.15);
+  --cell-hover-glow: rgba(200,162,211,0.15);
+  --cell-hover-shadow: rgba(200,162,211,0.2);
+  --cell-empty-color: rgba(184,160,192,0.4);
+  --num-badge-lilac-bg-1: #E8D5EE;
+  --num-badge-lilac-bg-2: #D4B8E0;
+  --num-badge-pink-bg-1: #FAE5E8;
+  --num-badge-pink-bg-2: #F5D0D6;
+  --count-lilac-bg: rgba(232,213,238,0.6);
+  --count-pink-bg: rgba(250,229,232,0.6);
+  --wn-num-gradient-1: #9B8EC4;
+  --wn-num-gradient-2: #C8A2D3;
+  --footer-border: rgba(200,162,211,0.15);
+  --scrollbar-thumb: rgba(200,162,211,0.3);
+  --scrollbar-thumb-hover: rgba(200,162,211,0.5);
+  --toggle-color: #5B4A65;
+  --toggle-icon-color: #9B8EC4;
+  --header-icon-bg-1: #C8A2D3;
+  --header-icon-bg-2: #F2C6CC;
+  --header-icon-shadow: rgba(200,162,211,0.3);
+  --header-title-1: #9B8EC4;
+  --header-title-2: #C8A2D3;
+  --header-title-3: #F2C6CC;
+  --error-color: #E57373;
+  --pos-dot-bg: rgba(76,175,80,0.1);
+  --pos-dot-color: #4CAF50;
+  --neg-dot-bg: rgba(229,115,115,0.1);
+  --neg-dot-color: #E57373;
+  --trait-text-color: #5B4A65;
+  --glass-fallback: rgba(255, 255, 255, 0.85);
+  --share-copied: #4CAF50;
+
+  /* Particle system — light: soft decorative sparkles */
+  --particle-color-1: 200, 162, 211;
+  --particle-color-2: 242, 198, 204;
+  --particle-color-3: 155, 142, 196;
+  --particle-color-4: 184, 212, 227;
+  --particle-base-opacity: 0.35;
+  --particle-bright-opacity: 0.55;
+  --particle-connection-alpha: 0.06;
+  --particle-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(250,245,248,0.5) 100%);
+  --particle-grid: none;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+  --bg-start: #0C0A14;
+  --bg-mid1: #110E1C;
+  --bg-mid2: #0F0D18;
+  --bg-end: #100D1A;
+  --glass-bg: rgba(28, 24, 40, 0.75);
+  --glass-border: rgba(155, 130, 200, 0.12);
+  --text-primary: #F0ECF5;
+  --text-secondary: #B0A0C4;
+  --text-muted: #8878A4;
+  --accent-lilac: #C8A2E0;
+  --accent-lilac-light: #2D2045;
+  --accent-lilac-dark: #DCC0F0;
+  --accent-lilac-mid: #3E2D5A;
+  --accent-pink: #F0A0B8;
+  --accent-pink-light: #3D1A2A;
+  --accent-pink-dark: #FFC8D8;
+  --accent-pink-mid: #5A2840;
+  --accent-lavender: #B8A0E8;
+  --orb1-bg: #8B60C0;
+  --orb2-bg: #C06080;
+  --orb3-bg: #7050B0;
+  --orb4-bg: #506888;
+  --orb1-opacity: 0.08;
+  --orb2-opacity: 0.07;
+  --orb3-opacity: 0.06;
+  --orb4-opacity: 0.05;
+  --ring-border: #8B60C0;
+  --ring-opacity: 0.04;
+  --input-bg: rgba(28, 24, 40, 0.8);
+  --input-border: rgba(155, 130, 200, 0.2);
+  --input-placeholder: rgba(155,130,200,0.35);
+  --input-focus-border: rgba(200,162,224,0.5);
+  --input-focus-bg: rgba(35, 30, 50, 0.9);
+  --input-focus-shadow: rgba(200,162,224,0.15);
+  --btn-gradient-1: #A07CC8;
+  --btn-gradient-2: #8060B0;
+  --btn-shadow: rgba(160,124,200,0.25);
+  --btn-shadow-hover: rgba(160,124,200,0.4);
+  --card-shadow: rgba(0,0,0,0.4);
+  --cell-lilac-bg-1: rgba(62, 45, 90, 0.65);
+  --cell-lilac-bg-2: rgba(45, 32, 69, 0.45);
+  --cell-lilac-border: rgba(155, 130, 200, 0.28);
+  --cell-pink-bg-1: rgba(61, 26, 42, 0.65);
+  --cell-pink-bg-2: rgba(50, 20, 35, 0.45);
+  --cell-pink-border: rgba(240,160,184,0.22);
+  --cell-date-bg-1: rgba(62, 45, 90, 0.25);
+  --cell-date-bg-2: rgba(61, 26, 42, 0.18);
+  --cell-date-border: rgba(155,130,200,0.12);
+  --cell-hover-glow: rgba(200,162,224,0.1);
+  --cell-hover-shadow: rgba(200,162,224,0.18);
+  --cell-empty-color: rgba(155,130,200,0.2);
+  --num-badge-lilac-bg-1: #3E2D5A;
+  --num-badge-lilac-bg-2: #2D2045;
+  --num-badge-pink-bg-1: #3D1A2A;
+  --num-badge-pink-bg-2: #2E1420;
+  --count-lilac-bg: rgba(62,45,90,0.55);
+  --count-pink-bg: rgba(61,26,42,0.55);
+  --wn-num-gradient-1: #B8A0E8;
+  --wn-num-gradient-2: #DCC0F0;
+  --footer-border: rgba(155,130,200,0.1);
+  --scrollbar-thumb: rgba(155,130,200,0.25);
+  --scrollbar-thumb-hover: rgba(155,130,200,0.4);
+  --toggle-color: #D8D0E8;
+  --toggle-icon-color: #B8A0E8;
+  --header-icon-bg-1: #A07CC8;
+  --header-icon-bg-2: #D07090;
+  --header-icon-shadow: rgba(160,124,200,0.3);
+  --header-title-1: #B8A0E8;
+  --header-title-2: #DCC0F0;
+  --header-title-3: #FFC8D8;
+  --error-color: #FF8A80;
+  --pos-dot-bg: rgba(100,220,130,0.12);
+  --pos-dot-color: #6ADE82;
+  --neg-dot-bg: rgba(255,138,128,0.12);
+  --neg-dot-color: #FF8A80;
+  --trait-text-color: #C0B0D4;
+  --glass-fallback: rgba(28, 24, 40, 0.92);
+  --share-copied: #6ADE82;
+
+  /* Particle system — dark: night sky stars */
+  --particle-color-1: 168, 85, 247;
+  --particle-color-2: 108, 92, 231;
+  --particle-color-3: 139, 92, 246;
+  --particle-color-4: 192, 132, 252;
+  --particle-base-opacity: 0.45;
+  --particle-bright-opacity: 0.75;
+  --particle-connection-alpha: 0.1;
+  --particle-vignette: radial-gradient(ellipse at center, transparent 50%, rgba(12,10,20,0.65) 100%);
+  --particle-grid: linear-gradient(rgba(155,130,200,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(155,130,200,0.03) 1px, transparent 1px);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid1) 30%, var(--bg-mid2) 60%, var(--bg-end) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* ===== Canvas Particle System ===== */
+#particles-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+/* Vignette overlay — visible in both themes */
+.vignette-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--particle-vignette);
+  transition: background 0.4s ease;
+}
+/* Subtle grid — dark theme only */
+.grid-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: var(--particle-grid);
+  background-size: 70px 70px;
+  transition: background-image 0.4s ease;
+}
+
+/* ===== Background Orbs ===== */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-orbs span {
+  position: absolute; border-radius: 50%; filter: blur(100px);
+}
+.bg-orbs .o1 { width: 400px; height: 400px; background: var(--orb1-bg); opacity: var(--orb1-opacity); top: -160px; left: -96px; animation: float 6s ease-in-out infinite; }
+.bg-orbs .o2 { width: 350px; height: 350px; background: var(--orb2-bg); opacity: var(--orb2-opacity); bottom: -96px; right: -64px; animation: float-d 8s ease-in-out 2s infinite; }
+.bg-orbs .o3 { width: 300px; height: 300px; background: var(--orb3-bg); opacity: var(--orb3-opacity); top: 33%; left: 50%; transform: translate(-50%,-50%); animation: float-s 10s ease-in-out 4s infinite; }
+.bg-orbs .o4 { width: 200px; height: 200px; background: var(--orb4-bg); opacity: var(--orb4-opacity); bottom: 25%; left: 25%; animation: float 6s ease-in-out 1s infinite; }
+
+/* Rotating ring */
+.bg-ring {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 600px; opacity: var(--ring-opacity); z-index: 0; pointer-events: none;
+  animation: rotate-slow 20s linear infinite;
+}
+.bg-ring div { width: 100%; height: 100%; border-radius: 50%; border: 2px dashed var(--ring-border); }
+
+/* ===== Animations ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.02); }
+}
+@keyframes float-d {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.02); }
+}
+@keyframes float-s {
+  0%, 100% { transform: translate(-50%,-50%) translateY(0) scale(1); }
+  50% { transform: translate(-50%,-50%) translateY(-20px) scale(1.02); }
+}
+@keyframes rotate-slow {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin-slow {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+@keyframes chevron-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(180deg); }
+}
+@keyframes neonPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+/* ===== Glass ===== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+@supports not (backdrop-filter: blur(20px)) {
+  .glass { background: var(--glass-fallback); }
+}
+
+/* ===== Layout ===== */
+.container {
+  position: relative; z-index: 1;
+  max-width: 480px; margin: 0 auto;
+  padding: 24px 12px 48px;
+}
+@media (min-width: 640px) {
+  .container { max-width: 520px; padding: 40px 20px 60px; }
+}
+
+/* ===== Top Bar ===== */
+.top-bar {
+  position: fixed; top: 12px; right: 12px; z-index: 50;
+  display: flex; align-items: center; gap: 6px;
+}
+@media (min-width: 640px) {
+  .top-bar { top: 16px; right: 16px; gap: 8px; }
+}
+
+.toggle-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 50px;
+  font-size: 13px; font-weight: 500; color: var(--toggle-color);
+  cursor: pointer; border: none; outline: none;
+  transition: box-shadow 0.3s, transform 0.15s, background 0.3s, border-color 0.3s;
+}
+.toggle-btn:hover { box-shadow: 0 8px 24px var(--card-shadow); transform: scale(1.05); }
+.toggle-btn:active { transform: scale(0.95); }
+.toggle-btn svg { width: 16px; height: 16px; color: var(--toggle-icon-color); transition: color 0.3s; }
+@media (min-width: 640px) {
+  .toggle-btn { padding: 10px 18px; font-size: 14px; }
+}
+
+.theme-icon { transition: transform 0.3s ease; }
+.toggle-btn:active .theme-icon { transform: rotate(180deg); }
+
+/* ===== Header ===== */
+.header { text-align: center; margin-bottom: 24px; }
+@media (min-width: 640px) { .header { margin-bottom: 32px; } }
+
+.header-icon-wrap {
+  display: inline-block; margin-bottom: 12px;
+  animation: spin-slow 4s ease-in-out infinite;
+}
+.header-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--header-icon-bg-1), var(--header-icon-bg-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px var(--header-icon-shadow);
+  transition: background 0.4s ease, box-shadow 0.3s ease;
+}
+@media (min-width: 640px) {
+  .header-icon { width: 56px; height: 56px; }
+}
+.header-icon svg { width: 24px; height: 24px; color: white; }
+@media (min-width: 640px) {
+  .header-icon svg { width: 28px; height: 28px; }
+}
+
+.header h1 {
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(90deg, var(--header-title-1), var(--header-title-2), var(--header-title-3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 6px;
+  transition: background 0.4s ease;
+}
+@media (min-width: 640px) { .header h1 { font-size: 40px; } }
+
+.header p {
+  color: var(--text-secondary); font-size: 14px; line-height: 1.5;
+  max-width: 360px; margin: 0 auto; padding: 0 8px;
+  transition: color 0.3s ease;
+}
+@media (min-width: 640px) { .header p { font-size: 16px; max-width: 400px; } }
+
+/* ===== Form ===== */
+.form-card {
+  border-radius: var(--radius-xl); padding: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 40px var(--card-shadow);
+  animation: fadeUp 0.5s ease both 0.15s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 640px) {
+  .form-card { padding: 24px; margin-bottom: 32px; border-radius: 28px; }
+}
+
+.form-row { display: flex; gap: 8px; align-items: center; }
+.form-label {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .form-label { font-size: 11px; } }
+
+.form-input {
+  flex: 1; padding: 10px 14px;
+  background: var(--input-bg); border: 1px solid var(--input-border);
+  border-radius: var(--radius); color: var(--text-primary);
+  font-size: 15px; font-family: inherit; outline: none;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, color 0.3s;
+}
+.form-input::placeholder { color: var(--input-placeholder); }
+.form-input:focus {
+  border-color: var(--input-focus-border); background: var(--input-focus-bg);
+  box-shadow: 0 0 0 3px var(--input-focus-shadow);
+}
+@media (min-width: 640px) { .form-input { padding: 12px 16px; font-size: 16px; } }
+
+.form-btn {
+  width: 100%; padding: 10px 20px; margin-top: 10px;
+  background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+  border: none; border-radius: var(--radius); color: white;
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: box-shadow 0.3s, transform 0.15s, background 0.3s;
+  box-shadow: 0 8px 20px var(--btn-shadow);
+}
+.form-btn:hover { box-shadow: 0 12px 28px var(--btn-shadow-hover); transform: translateY(-1px); }
+.form-btn:active { transform: translateY(0); }
+@media (min-width: 640px) { .form-btn { padding: 12px 24px; font-size: 15px; } }
+
+.error-msg {
+  font-size: 12px; color: var(--error-color); margin-top: 8px; padding-left: 4px;
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height 0.3s, opacity 0.3s;
+}
+.error-msg.show { max-height: 40px; opacity: 1; }
+
+/* ===== Results ===== */
+.results { display: none; }
+.results.visible { display: block; }
+
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .section-label { font-size: 11px; margin-bottom: 12px; } }
+
+/* Share */
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 50px;
+  font-size: 12px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; border: none; outline: none; background: none;
+  transition: color 0.3s, background 0.3s;
+}
+.share-btn:hover { color: var(--accent-lavender); }
+.share-btn svg { width: 14px; height: 14px; }
+.share-btn.copied { color: var(--share-copied); }
+
+/* ===== Psychomatrix Grid ===== */
+.matrix-card {
+  border-radius: var(--radius-xl); padding: 12px;
+  box-shadow: 0 12px 40px var(--card-shadow);
+  animation: scaleIn 0.5s ease both 0.1s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 640px) {
+  .matrix-card { padding: 20px; border-radius: 28px; }
+}
+
+.matrix-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+@media (min-width: 640px) { .matrix-grid { gap: 10px; } }
+
+/* Cell */
+.m-cell {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 8px 4px; min-height: 56px;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s, background 0.3s, border-color 0.3s;
+  cursor: default;
+}
+@media (min-width: 640px) {
+  .m-cell { border-radius: 18px; padding: 12px 8px; min-height: 72px; }
+}
+
+.m-cell::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), var(--cell-hover-glow), transparent 60%);
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.m-cell:hover::before { opacity: 1; }
+.m-cell:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px var(--cell-hover-shadow); }
+@media (hover: none) {
+  .m-cell:hover { transform: none; box-shadow: none; }
+  .m-cell:active { transform: scale(0.97); box-shadow: 0 2px 10px var(--cell-hover-shadow); }
+}
+
+.m-cell.lilac {
+  background: linear-gradient(135deg, var(--cell-lilac-bg-1), var(--cell-lilac-bg-2));
+  border: 1px solid var(--cell-lilac-border);
+}
+.m-cell.pink {
+  background: linear-gradient(135deg, var(--cell-pink-bg-1), var(--cell-pink-bg-2));
+  border: 1px solid var(--cell-pink-border);
+}
+.m-cell.date-cell {
+  background: linear-gradient(135deg, var(--cell-date-bg-1), var(--cell-date-bg-2));
+  border: 1px solid var(--cell-date-border);
+}
+.m-cell.empty-cell {
+  background: transparent;
+  border: 1px solid transparent;
+  min-height: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.m-cell .label {
+  font-size: 8px; font-weight: 500; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  text-align: center; line-height: 1.2;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .m-cell .label { font-size: 9px; } }
+
+.m-cell .value {
+  font-size: 14px; font-weight: 700; line-height: 1.2; margin-top: 2px;
+  letter-spacing: 0.02em; word-break: break-all;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .m-cell .value { font-size: 16px; } }
+
+.m-cell.lilac .value { color: var(--accent-lilac-dark); }
+.m-cell.pink .value { color: var(--accent-pink-dark); }
+.m-cell .value.empty { color: var(--cell-empty-color); font-weight: 300; }
+.m-cell.date-cell .date-text {
+  font-size: 14px; font-weight: 600; color: var(--accent-lilac-dark); letter-spacing: 0.02em;
+}
+@media (min-width: 640px) { .m-cell.date-cell .date-text { font-size: 16px; } }
+
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+
+/* Stagger animation for cells */
+.m-cell { animation: scaleIn 0.35s ease both; }
+.m-cell:nth-child(1) { animation-delay: 0.05s; }
+.m-cell:nth-child(2) { animation-delay: 0.1s; }
+.m-cell:nth-child(3) { animation-delay: 0.12s; }
+.m-cell:nth-child(4) { animation-delay: 0.15s; }
+.m-cell:nth-child(5) { animation-delay: 0.2s; }
+.m-cell:nth-child(6) { animation-delay: 0.25s; }
+.m-cell:nth-child(7) { animation-delay: 0.3s; }
+.m-cell:nth-child(8) { animation-delay: 0.35s; }
+.m-cell:nth-child(9) { animation-delay: 0.4s; }
+.m-cell:nth-child(10) { animation-delay: 0.45s; }
+.m-cell:nth-child(11) { animation-delay: 0.5s; }
+.m-cell:nth-child(12) { animation-delay: 0.55s; }
+.m-cell:nth-child(13) { animation-delay: 0.6s; }
+.m-cell:nth-child(14) { animation-delay: 0.65s; }
+.m-cell:nth-child(15) { animation-delay: 0.7s; }
+.m-cell:nth-child(16) { animation-delay: 0.75s; }
+.m-cell:nth-child(17) { animation-delay: 0.8s; }
+.m-cell:nth-child(18) { animation-delay: 0.85s; }
+
+/* ===== Working Numbers ===== */
+.wn-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+@media (min-width: 640px) { .wn-grid { gap: 10px; } }
+
+.wn-card {
+  border-radius: var(--radius); padding: 10px 6px; text-align: center;
+  transition: box-shadow 0.3s, transform 0.2s, background 0.3s, border-color 0.3s;
+  animation: fadeUp 0.35s ease both;
+}
+.wn-card:hover { box-shadow: 0 6px 18px var(--card-shadow); transform: translateY(-2px); }
+.wn-card:nth-child(1) { animation-delay: 0.05s; }
+.wn-card:nth-child(2) { animation-delay: 0.1s; }
+.wn-card:nth-child(3) { animation-delay: 0.15s; }
+.wn-card:nth-child(4) { animation-delay: 0.2s; }
+
+.wn-card .num {
+  font-size: 18px; font-weight: 700;
+  background: linear-gradient(90deg, var(--wn-num-gradient-1), var(--wn-num-gradient-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background 0.4s ease;
+}
+@media (min-width: 640px) { .wn-card .num { font-size: 22px; } }
+
+.wn-card .wn-label {
+  font-size: 8px; color: var(--text-muted); margin-top: 2px;
+  font-weight: 500; line-height: 1.2;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .wn-card .wn-label { font-size: 9px; } }
+
+/* ===== Characteristics ===== */
+.char-list { display: grid; gap: 8px; }
+@media (min-width: 640px) { .char-list { gap: 10px; } }
+
+.char-item {
+  border-radius: var(--radius); overflow: hidden;
+  transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
+  animation: fadeUp 0.35s ease both;
+}
+.char-item:hover { box-shadow: 0 6px 18px var(--card-shadow); }
+
+.char-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; cursor: pointer; border: none; background: none;
+  width: 100%; text-align: left; font-family: inherit;
+}
+@media (min-width: 640px) { .char-header { padding: 14px 16px; gap: 12px; } }
+
+.char-num {
+  flex-shrink: 0; width: 32px; height: 32px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+  transition: background 0.3s;
+}
+@media (min-width: 640px) { .char-num { width: 38px; height: 38px; font-size: 14px; } }
+
+.char-num.lilac-num {
+  background: linear-gradient(135deg, var(--num-badge-lilac-bg-1), var(--num-badge-lilac-bg-2)); color: var(--accent-lilac-dark);
+}
+.char-num.pink-num {
+  background: linear-gradient(135deg, var(--num-badge-pink-bg-1), var(--num-badge-pink-bg-2)); color: var(--accent-pink-dark);
+}
+
+.char-name { flex: 1; font-weight: 600; font-size: 13px; color: var(--text-primary); transition: color 0.3s; }
+@media (min-width: 640px) { .char-name { font-size: 14px; } }
+
+.char-count {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 8px; white-space: nowrap;
+  letter-spacing: 0.03em;
+  transition: background 0.3s, color 0.3s;
+}
+@media (min-width: 640px) { .char-count { font-size: 12px; padding: 4px 12px; } }
+.char-count.lilac-count { background: var(--count-lilac-bg); color: var(--accent-lilac-dark); }
+.char-count.pink-count { background: var(--count-pink-bg); color: var(--accent-pink-dark); }
+
+.char-chevron {
+  width: 16px; height: 16px; color: var(--text-muted);
+  transition: transform 0.3s ease, color 0.3s;
+}
+.char-chevron.open { transform: rotate(180deg); }
+
+.char-body {
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.3s ease;
+  padding: 0 12px;
+}
+.char-body.open {
+  max-height: 300px; opacity: 1;
+  padding: 0 12px 12px;
+}
+@media (min-width: 640px) { .char-body.open { padding: 0 16px 14px; } }
+
+.char-trait {
+  display: flex; gap: 8px; align-items: flex-start;
+  margin-top: 8px;
+}
+.char-trait .t-dot {
+  flex-shrink: 0; width: 18px; height: 18px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin-top: 1px; font-size: 10px;
+}
+.char-trait.pos .t-dot { background: var(--pos-dot-bg); color: var(--pos-dot-color); }
+.char-trait.neg .t-dot { background: var(--neg-dot-bg); color: var(--neg-dot-color); }
+.char-trait .t-label {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; margin-bottom: 1px;
+}
+.char-trait.pos .t-label { color: var(--pos-dot-color); }
+.char-trait.neg .t-label { color: var(--neg-dot-color); }
+.char-trait .t-text { font-size: 12px; color: var(--trait-text-color); line-height: 1.5; transition: color 0.3s; }
+@media (min-width: 640px) {
+  .char-trait .t-dot { width: 20px; height: 20px; }
+  .char-trait .t-label { font-size: 10px; }
+  .char-trait .t-text { font-size: 13px; }
+}
+
+/* ===== SEO Block ===== */
+.seo-block {
+  margin-top: 32px; padding: 20px; border-radius: var(--radius-xl);
+  animation: fadeUp 0.5s ease both 0.5s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.seo-block h2 {
+  font-size: 16px; font-weight: 600; margin-bottom: 10px;
+  color: var(--text-primary);
+}
+.seo-block p {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+}
+@media (min-width: 640px) {
+  .seo-block { padding: 24px; }
+  .seo-block h2 { font-size: 18px; }
+  .seo-block p { font-size: 14px; }
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding-top: 16px; margin-top: 16px;
+  border-top: 1px solid var(--footer-border);
+  color: var(--text-muted); font-size: 11px;
+  transition: border-color 0.3s, color 0.3s;
+}
+@media (min-width: 640px) { .footer { font-size: 12px; } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+/* ===== Dark Mode Enhancements ===== */
+[data-theme="dark"] .glass {
+  border-color: var(--glass-border);
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 4px 20px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .m-cell.lilac {
+  box-shadow: inset 0 1px 0 rgba(200,162,224,0.08), 0 2px 8px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .m-cell.pink {
+  box-shadow: inset 0 1px 0 rgba(240,160,184,0.08), 0 2px 8px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .m-cell.lilac:hover {
+  box-shadow: inset 0 1px 0 rgba(200,162,224,0.15), 0 6px 20px rgba(200,162,224,0.15);
+}
+
+[data-theme="dark"] .m-cell.pink:hover {
+  box-shadow: inset 0 1px 0 rgba(240,160,184,0.15), 0 6px 20px rgba(240,160,184,0.15);
+}
+
+[data-theme="dark"] .form-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 12px 40px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .matrix-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 12px 40px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .results.visible .matrix-card {
+  box-shadow: 0 0 40px rgba(160,124,200,0.15), 0 0 0 1px rgba(155,130,200,0.12), 0 12px 40px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .form-input {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .form-input:focus {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 0 0 3px var(--input-focus-shadow);
+}
+
+[data-theme="dark"] .form-btn {
+  box-shadow: 0 4px 16px var(--btn-shadow);
+}
+
+[data-theme="dark"] .form-btn:hover {
+  box-shadow: 0 8px 24px var(--btn-shadow-hover);
+}
+
+[data-theme="dark"] .wn-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 2px 10px rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] .wn-card:hover {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.1), 0 6px 18px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .char-item {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 2px 10px rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] .char-item:hover {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.1), 0 6px 18px rgba(0,0,0,0.3);
+}
+
+[data-theme="dark"] .header-icon {
+  box-shadow: 0 8px 24px rgba(160,124,200,0.25), 0 0 40px rgba(160,124,200,0.15);
+}
+
+[data-theme="dark"] .m-cell::before {
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(200,162,224,0.08), transparent 60%);
+}
+
+[data-theme="dark"] .bg-ring div {
+  border-color: rgba(139,96,192,0.15);
+}
+
+[data-theme="dark"] .seo-block {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 4px 20px rgba(0,0,0,0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #particles-canvas { display: none; }
+  .bg-orbs span { animation: none !important; }
+  .bg-ring { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background Layers -->
+<div class="bg-orbs">
+  <span class="o1"></span><span class="o2"></span><span class="o3"></span><span class="o4"></span>
+</div>
+<div class="bg-ring"><div></div></div>
+<div class="vignette-overlay"></div>
+<div class="grid-overlay"></div>
+
+<!-- Interactive Particle Canvas -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- Top Bar: Language + Theme toggles -->
+<div class="top-bar">
+  <button class="toggle-btn glass" id="themeToggle" aria-label="Toggle theme">
+    <svg class="theme-icon" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+  <button class="toggle-btn glass" id="langToggle" aria-label="Switch language">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <span id="langLabel">EN</span>
+  </button>
+</div>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-icon-wrap">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+      </div>
+    </div>
+    <h1 id="title">Квадрат Пифагора</h1>
+    <p id="subtitle">Нумерологический расчёт психоматрицы по дате рождения</p>
+  </header>
+
+  <!-- Form -->
+  <div class="glass form-card">
+    <form id="birthForm" autocomplete="off">
+      <div class="form-row">
+        <label class="form-label" for="dateInput" id="dateLabel">Дата рождения</label>
+        <input type="text" id="dateInput" placeholder="ДД.ММ.ГГГГ" maxlength="10" inputmode="numeric" autofocus class="form-input">
+      </div>
+      <button type="submit" class="form-btn" id="calcBtn">Рассчитать</button>
+      <div class="error-msg" id="errorMsg">Введите корректную дату в формате ДД.ММ.ГГГГ</div>
+    </form>
+  </div>
+
+  <!-- Results -->
+  <p class="section-label" id="matrixLabel">Психоматрица</p>
+  <div class="glass matrix-card">
+    <div class="matrix-grid" id="matrixGrid"></div>
+  </div>
+
+  <div class="results" id="results">
+    <div style="text-align:right;margin-bottom:8px">
+      <button class="share-btn glass" id="shareBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span id="shareLabel">Ссылка</span>
+      </button>
+    </div>
+
+    <p class="section-label" style="margin-top:20px" id="wnLabel">Рабочие числа</p>
+    <div class="wn-grid" id="wnGrid"></div>
+
+    <p class="section-label" style="margin-top:20px" id="charLabel">Характеристики</p>
+    <div class="char-list" id="charList"></div>
+
+    <!-- SEO Block -->
+    <div class="seo-block glass">
+      <h2 id="seoTitle">Что такое квадрат Пифагора?</h2>
+      <p id="seoText">Квадрат Пифагора (психоматрица) — это нумерологическая система, основанная на дате рождения. Каждая цифра в квадрате отвечает за определённое качество личности: характер, энергию, таланты, здоровье, интуицию, трудолюбие, удачу, чувство долга и интеллект. Бесплатный онлайн-расчёт поможет вам лучше понять себя и свои врождённые способности.</p>
+    </div>
+
+    <footer class="footer" id="footer">Квадрат Пифагора — бесплатный нумерологический расчёт</footer>
+  </div>
+</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const T = {
+  ru: {
+    title: 'Квадрат Пифагора',
+    subtitle: 'Нумерологический расчёт психоматрицы по дате рождения',
+    dateLabel: 'Дата рождения',
+    placeholder: 'ДД.ММ.ГГГГ',
+    calcBtn: 'Рассчитать',
+    error: 'Введите корректную дату в формате ДД.ММ.ГГГГ',
+    matrixLabel: 'Психоматрица',
+    wnLabel: 'Рабочие числа',
+    charLabel: 'Характеристики',
+    shareLabel: 'Ссылка',
+    copied: 'Скопировано!',
+    footer: 'Квадрат Пифагора — бесплатный нумерологический расчёт',
+    addNums: 'Доп. числа',
+    destiny: 'Число судьбы',
+    temper: 'Темперамент',
+    goal: 'Цель',
+    family: 'Семья',
+    habit: 'Привычка',
+    everyday: 'Быт',
+    strong: 'Сильная сторона',
+    vulner: 'Уязвимость',
+    noDigits: 'нет',
+    noNeg: 'Нет отрицательных проявлений — качество развито гармонично',
+    seoTitle: 'Что такое квадрат Пифагора?',
+    seoText: 'Квадрат Пифагора (психоматрица) — это нумерологическая система, основанная на дате рождения. Каждая цифра в квадрате отвечает за определённое качество личности: характер, энергию, таланты, здоровье, интуицию, трудолюбие, удачу, чувство долга и интеллект. Бесплатный онлайн-расчёт поможет вам лучше понять себя и свои врождённые способности.',
+    wnLabels: ['1-е раб.', '2-е раб.', '3-е раб.', '4-е раб.'],
+    descs: [
+      null,
+      { name:'Характер', pos:['Дипломатичность, мягкость, умение сглаживать конфликты','Уверенность, уравновешенность, адекватная самооценка','Сильная воля, целеустремлённость, лидерские задатки','Харизма, умение вести за собой, организаторские способности'], neg:['Слабохарактерность, неумение отстаивать свои интересы','Иногда эгоизм, излишняя самоуверенность','Упрямство, нежелание слышать других','Деспотичность, жёсткость, авторитарность'] },
+      { name:'Энергия', pos:['Способность быстро восстанавливаться через отдых и природу','Нормальный жизненный тонус, стабильная активность','Высокий энергетический потенциал, умение заряжать других','Мощная биоэнергетика, экстрасенсорные способности'], neg:['Недостаток жизненной силы, быстрая утомляемость','Возможны периоды упадка сил и апатии','Гиперактивность, склонность к переутомлению','Раздражительность при переизбытке энергии'] },
+      { name:'Интерес', pos:['Развитое творческое и образное мышление','Способность к обучению при должном старании','Хорошие аналитические способности, пытливый ум','Выдающийся интеллект, талант исследователя'], neg:['Точные науки даются с трудом, нелюбовь к аналитике','Поверхностный интерес, нехватка глубины','Склонность закапываться в детали','Отрыв от реальности, жизнь в теории'] },
+      { name:'Здоровье', pos:['Внимательное отношение к своему организму','Достаточный запас здоровья, нормальное самочувствие','Крепкое здоровье, выносливость, редкие болезни','Отменное здоровье, спортивные достижения'], neg:['Слабое здоровье, склонность к болезням','Требует постоянной поддержки и профилактики','Склонность пренебрегать профилактикой','Избыточные нагрузки на организм'] },
+      { name:'Логика', pos:['Хорошо развита эмоциональная сфера и эмпатия','Сбалансированное мышление, здравый смысл','Острая интуиция, аналитика, просчёт наперёд','Феноменальная интуиция, дар предвидения'], neg:['Логика развита слабо, решения на эмоциях','Не хватает остроты мышления и глубины','Самоуверенность, переоценка своей правоты','Склонность к мистицизму, отрыв от реальности'] },
+      { name:'Труд', pos:['Склонность к интеллектуальной и творческой работе','Умеренное трудолюбие, усидчивость','Мастерство в работе руками, прилежность','Высочайшая работоспособность, мастер своего дела'], neg:['Нежелание заниматься физическим трудом','Может не хватать настойчивости и терпения','Перфекционизм, требовательность к себе','Трудоголизм, неумение отдыхать'] },
+      { name:'Удача', pos:['Ценит всё, что достигает своим трудом','В основном полагается на себя, это закаляет','Везучесть, часто оказывается в нужном месте','Невероятное везение, баловень судьбы'], neg:['Невезучесть, всё даётся с большим трудом','Нестабильная удача, зависит от обстоятельств','Излишняя надежда на авось вместо действий','Потеря связи с реальностью, упование на судьбу'] },
+      { name:'Долг', pos:['Свобода от обязательств, лёгкость','Умеренное чувство долга, можно положиться','Надёжность, верность слову, ответственность','Максимальная ответственность, на вас можно положиться'], neg:['Безответственность, избегание обязательств','Может уклоняться от сложных обязательств','Излишняя требовательность к другим','Гиперответственность, тревожность за других'] },
+      { name:'Память', pos:['Способность мыслить нешаблонно, свежий взгляд','Нормальная память, средняя обучаемость','Хорошая память, быстро схватывает новое','Гениальная память, выдающийся интеллект'], neg:['Слабая память, информация усваивается с трудом','Не хватает глубины и усидчивости','Перегрузка мозга избытком информации','Переутомление, сложность с отключением мозга'] },
+    ]
+  },
+  en: {
+    title: 'Pythagorean Square',
+    subtitle: 'Numerological psychomatrix calculation by date of birth',
+    dateLabel: 'Date of birth',
+    placeholder: 'DD.MM.YYYY',
+    calcBtn: 'Calculate',
+    error: 'Please enter a valid date in DD.MM.YYYY format',
+    matrixLabel: 'Psychomatrix',
+    wnLabel: 'Working Numbers',
+    charLabel: 'Characteristics',
+    shareLabel: 'Link',
+    copied: 'Copied!',
+    footer: 'Pythagorean Square — free numerological calculation',
+    addNums: 'Add. Numbers',
+    destiny: 'Destiny',
+    temper: 'Temperament',
+    goal: 'Goal',
+    family: 'Family',
+    habit: 'Habit',
+    everyday: 'Everyday',
+    strong: 'Strength',
+    vulner: 'Vulnerability',
+    noDigits: 'none',
+    noNeg: 'No negative manifestations — this quality is harmoniously developed',
+    seoTitle: 'What is the Pythagorean Square?',
+    seoText: 'The Pythagorean Square (psychomatrix) is a numerological system based on the date of birth. Each digit in the square corresponds to a specific personality quality: character, energy, talents, health, intuition, diligence, luck, sense of duty, and intellect. A free online calculation will help you better understand yourself and your innate abilities.',
+    wnLabels: ['1st work.', '2nd work.', '3rd work.', '4th work.'],
+    descs: [
+      null,
+      { name:'Character', pos:['Diplomacy, softness, ability to smooth conflicts','Confidence, balance, adequate self-esteem','Strong will, determination, leadership qualities','Charisma, ability to lead, organizational skills'], neg:['Weak character, inability to stand up for yourself','Sometimes selfishness, excessive self-confidence','Stubbornness, unwillingness to hear others','Despotism, rigidity, authoritarianism'] },
+      { name:'Energy', pos:['Ability to recover quickly through rest and nature','Normal vitality, stable activity','High energy potential, ability to charge others','Powerful bioenergy, extrasensory abilities'], neg:['Lack of vitality, quick fatigue','Possible periods of decline and apathy','Hyperactivity, tendency to overexertion','Irritability with excess energy'] },
+      { name:'Interest', pos:['Developed creative and imaginative thinking','Ability to learn with due diligence','Good analytical skills, inquisitive mind','Outstanding intellect, researcher talent'], neg:['Exact sciences are difficult, dislike of analytics','Superficial interest, lack of depth','Tendency to dig into details','Detachment from reality, living in theory'] },
+      { name:'Health', pos:['Attentive attitude to your body','Sufficient health reserve, normal well-being','Strong health, endurance, rare illnesses','Excellent health, athletic achievements'], neg:['Weak health, tendency to illness','Requires constant support and prevention','Tendency to neglect prevention','Excessive strain on the body'] },
+      { name:'Logic', pos:['Well-developed emotional sphere and empathy','Balanced thinking, common sense','Sharp intuition, analytics, foresight','Phenomenal intuition, gift of foresight'], neg:['Logic poorly developed, decisions based on emotions','Lacking sharpness of thinking and depth','Self-confidence, overestimation of being right','Tendency to mysticism, detachment from reality'] },
+      { name:'Labor', pos:['Inclination to intellectual and creative work','Moderate diligence, perseverance','Mastery in manual work, diligence','Highest performance, master of your craft'], neg:['Reluctance to do physical labor','May lack persistence and patience','Perfectionism, excessive self-demand','Workaholism, inability to rest'] },
+      { name:'Luck', pos:['Values everything achieved through own labor','Mostly relies on themselves, which tempers them','Lucky, often in the right place','Incredible luck, darling of fate'], neg:['Bad luck, everything comes with great difficulty','Unstable luck, depends on circumstances','Excessive hope for chance instead of action','Loss of touch with reality, reliance on fate'] },
+      { name:'Duty', pos:['Freedom from obligations, lightness','Moderate sense of duty, reliable','Reliability, fidelity to word, responsibility','Maximum responsibility, you can be relied upon'], neg:['Irresponsibility, avoiding obligations','May evade complex obligations','Excessive demands on others','Hyper-responsibility, anxiety for others'] },
+      { name:'Memory', pos:['Ability to think outside the box, fresh perspective','Normal memory, average learning ability','Good memory, quickly grasps new things','Genius memory, outstanding intellect'], neg:['Weak memory, information absorbed with difficulty','Lacking depth and perseverance','Brain overload with excess information','Exhaustion, difficulty turning off the brain'] },
+    ]
+  }
+};
+
+let lang = 'ru';
+let currentTheme = localStorage.getItem('psycho-theme') || 'light';
+
+// ===== CALCULATION =====
+function validateDate(str) {
+  const m = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (!m) return false;
+  const d = +m[1], mo = +m[2], y = +m[3];
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
+  const dt = new Date(y, mo - 1, d);
+  return dt.getDate() === d && dt.getMonth() === mo - 1 && dt.getFullYear() === y;
+}
+
+function formatInput(v) {
+  let s = v.replace(/[^\d]/g, '').slice(0, 8);
+  if (s.length > 2) s = s.slice(0, 2) + '.' + s.slice(2);
+  if (s.length > 5) s = s.slice(0, 5) + '.' + s.slice(5);
+  return s;
+}
+
+function calculate(dateStr) {
+  const clean = dateStr.replace(/\./g, '');
+  const digits = clean.split('').map(Number);
+  const sum1 = digits.reduce((a, b) => a + b, 0);
+  const sum2 = String(sum1).split('').reduce((a, c) => a + +c, 0);
+  const firstDayDigit = +dateStr[0];
+  const sum3 = sum1 - 2 * firstDayDigit;
+  const sum4 = String(Math.abs(sum3)).split('').reduce((a, c) => a + +c, 0);
+  const working = [sum1, sum2, sum3, sum4];
+
+  const allDigits = clean + working.map(n => String(Math.abs(n))).join('');
+  const counts = {};
+  for (let i = 1; i <= 9; i++) counts[i] = 0;
+  for (const ch of allDigits) {
+    const d = +ch;
+    if (d >= 1 && d <= 9) counts[d]++;
+  }
+
+  return {
+    working,
+    counts,
+    destinyNumber: sum2,
+    temperament: (counts[1]>0?1:0) + (counts[4]>0?1:0) + (counts[7]>0?1:0),
+    goal: counts[1] + counts[4] + counts[7],
+    family: counts[2] + counts[5] + counts[8],
+    habit: counts[3] + counts[6] + counts[9],
+    everyday: (counts[4]>0?1:0) + (counts[5]>0?1:0) + (counts[6]>0?1:0)
+  };
+}
+
+function digitString(digit, count) {
+  if (count === 0) return '';
+  return String(digit).repeat(count);
+}
+
+function formatDigits(digit, count) {
+  const t = T[lang];
+  if (count === 0) return t.noDigits;
+  return String(digit).repeat(count);
+}
+
+// ===== CELL MOUSE TRACKING =====
+document.addEventListener('mousemove', e => {
+  const cell = e.target.closest('.m-cell');
+  if (!cell) return;
+  const rect = cell.getBoundingClientRect();
+  cell.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+  cell.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+});
+
+// ===== THEME =====
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  currentTheme = theme;
+  localStorage.setItem('psycho-theme', theme);
+  updateThemeIcon();
+  updateParticleColors();
+}
+
+function updateThemeIcon() {
+  const icon = document.getElementById('themeIcon');
+  if (currentTheme === 'dark') {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  } else {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+}
+
+// ===== RENDER =====
+function renderEmptyGrid() {
+  const t = T[lang];
+  const grid = document.getElementById('matrixGrid');
+  // Default date placeholder
+  const emptyDate = lang === 'ru' ? '__.__.____' : '__.__.____';
+  const cells = [
+    { label: t.addNums, value: '—', type: 'lilac', span: 2 },
+    { label: t.destiny, value: '—', type: 'lilac' },
+    { label: t.temper, value: '—', type: 'lilac' },
+    { label: t.descs[1].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[4].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[7].name, value: '—', count: 0, type: 'pink' },
+    { label: t.goal, value: '—', type: 'lilac' },
+    { label: t.descs[2].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[5].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[8].name, value: '—', count: 0, type: 'pink' },
+    { label: t.family, value: '—', type: 'lilac' },
+    { label: t.descs[3].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[6].name, value: '—', count: 0, type: 'pink' },
+    { label: t.descs[9].name, value: '—', count: 0, type: 'pink' },
+    { label: t.habit, value: '—', type: 'lilac' },
+    { label: '', value: '', type: 'empty' },
+    { label: t.everyday, value: '—', type: 'lilac' },
+    { label: '', value: emptyDate, type: 'date', span: 2 },
+  ];
+
+  grid.innerHTML = cells.map(cell => {
+    const spanClass = cell.span === 2 ? ' col-span-2' : cell.span === 3 ? ' col-span-3' : '';
+    const typeClass = cell.type === 'date' ? 'date-cell' : cell.type === 'empty' ? 'empty-cell' : cell.type;
+    if (cell.type === 'empty') return '<div class="m-cell empty-cell"></div>';
+    if (cell.type === 'date') return `<div class="m-cell ${typeClass}${spanClass}"><span class="date-text">${cell.value}</span></div>`;
+    return `<div class="m-cell ${typeClass}${spanClass}"><span class="label">${cell.label}</span><span class="value empty">${cell.value}</span></div>`;
+  }).join('');
+
+  document.getElementById('wnGrid').innerHTML = '';
+  document.getElementById('charList').innerHTML = '';
+}
+
+function renderAll(data, dateStr) {
+  const t = T[lang];
+
+  const grid = document.getElementById('matrixGrid');
+  const c = data.counts;
+  const cells = [
+    { label: t.addNums, value: data.working.join(','), type: 'lilac', span: 2 },
+    { label: t.destiny, value: data.destinyNumber, type: 'lilac' },
+    { label: t.temper, value: data.temperament, type: 'lilac' },
+    { label: t.descs[1].name, value: digitString(1, c[1]), count: c[1], type: 'pink' },
+    { label: t.descs[4].name, value: digitString(4, c[4]), count: c[4], type: 'pink' },
+    { label: t.descs[7].name, value: digitString(7, c[7]), count: c[7], type: 'pink' },
+    { label: t.goal, value: data.goal, type: 'lilac' },
+    { label: t.descs[2].name, value: digitString(2, c[2]), count: c[2], type: 'pink' },
+    { label: t.descs[5].name, value: digitString(5, c[5]), count: c[5], type: 'pink' },
+    { label: t.descs[8].name, value: digitString(8, c[8]), count: c[8], type: 'pink' },
+    { label: t.family, value: data.family, type: 'lilac' },
+    { label: t.descs[3].name, value: digitString(3, c[3]), count: c[3], type: 'pink' },
+    { label: t.descs[6].name, value: digitString(6, c[6]), count: c[6], type: 'pink' },
+    { label: t.descs[9].name, value: digitString(9, c[9]), count: c[9], type: 'pink' },
+    { label: t.habit, value: data.habit, type: 'lilac' },
+    { label: '', value: '', type: 'empty' },
+    { label: t.everyday, value: data.everyday, type: 'lilac' },
+    { label: '', value: dateStr, type: 'date', span: 2 },
+  ];
+
+  grid.innerHTML = cells.map(cell => {
+    const spanClass = cell.span === 2 ? ' col-span-2' : cell.span === 3 ? ' col-span-3' : '';
+    const typeClass = cell.type === 'date' ? 'date-cell' : cell.type === 'empty' ? 'empty-cell' : cell.type;
+    const isEmpty = cell.count === 0 || cell.value === '' || cell.value === 0;
+    const valueClass = isEmpty ? 'value empty' : 'value';
+
+    if (cell.type === 'empty') {
+      return '<div class="m-cell empty-cell"></div>';
+    }
+    if (cell.type === 'date') {
+      return `<div class="m-cell ${typeClass}${spanClass}"><span class="date-text">${cell.value}</span></div>`;
+    }
+    return `<div class="m-cell ${typeClass}${spanClass}"><span class="label">${cell.label}</span><span class="${valueClass}">${isEmpty ? '—' : cell.value}</span></div>`;
+  }).join('');
+
+  document.getElementById('wnGrid').innerHTML = data.working.map((n, i) =>
+    `<div class="wn-card glass"><div class="num">${n}</div><div class="wn-label">${t.wnLabels[i]}</div></div>`
+  ).join('');
+
+  const charList = document.getElementById('charList');
+  charList.innerHTML = '';
+  for (let n = 1; n <= 9; n++) {
+    const cnt = c[n];
+    const info = t.descs[n];
+    const idx = Math.min(cnt, 3);
+    const numClass = n % 2 === 1 ? 'lilac-num' : 'pink-num';
+    const countClass = n % 2 === 1 ? 'lilac-count' : 'pink-count';
+    const item = document.createElement('div');
+    item.className = 'char-item glass';
+    item.innerHTML = `
+      <button class="char-header" data-n="${n}">
+        <div class="char-num ${numClass}">${n}</div>
+        <div class="char-name">${info.name}</div>
+        <span class="char-count ${countClass}">${formatDigits(n, cnt)}</span>
+        <svg class="char-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="char-body" id="charBody${n}">
+        ${cnt > 0 ? `
+        <div class="char-trait pos">
+          <div class="t-dot">+</div>
+          <div><div class="t-label">${t.strong}</div><div class="t-text">${info.pos[idx]}</div></div>
+        </div>` : ''}
+        ${cnt >= 4 ? '' : `
+        <div class="char-trait neg">
+          <div class="t-dot">−</div>
+          <div><div class="t-label">${t.vulner}</div><div class="t-text">${info.neg[idx]}</div></div>
+        </div>`}
+      </div>`;
+    charList.appendChild(item);
+  }
+
+  charList.querySelectorAll('.char-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.n;
+      const body = document.getElementById('charBody' + n);
+      const chev = btn.querySelector('.char-chevron');
+      body.classList.toggle('open');
+      chev.classList.toggle('open');
+    });
+  });
+}
+
+function updateLang() {
+  const t = T[lang];
+  document.documentElement.lang = lang === 'ru' ? 'ru' : 'en';
+  document.getElementById('title').textContent = t.title;
+  document.getElementById('subtitle').textContent = t.subtitle;
+  document.getElementById('dateLabel').textContent = t.dateLabel;
+  document.getElementById('dateInput').placeholder = t.placeholder;
+  document.getElementById('calcBtn').textContent = t.calcBtn;
+  document.getElementById('errorMsg').textContent = t.error;
+  document.getElementById('matrixLabel').textContent = t.matrixLabel;
+  document.getElementById('wnLabel').textContent = t.wnLabel;
+  document.getElementById('charLabel').textContent = t.charLabel;
+  document.getElementById('shareLabel').textContent = t.shareLabel;
+  document.getElementById('footer').textContent = t.footer;
+  document.getElementById('langLabel').textContent = lang === 'ru' ? 'EN' : 'RU';
+  document.getElementById('seoTitle').textContent = t.seoTitle;
+  document.getElementById('seoText').textContent = t.seoText;
+
+  const results = document.getElementById('results');
+  if (results.classList.contains('visible')) {
+    const dateStr = document.getElementById('dateInput').value;
+    if (validateDate(dateStr)) {
+      renderAll(calculate(dateStr), dateStr);
+    }
+  } else {
+    renderEmptyGrid();
+  }
+}
+
+// ============================================================
+//  INTERACTIVE PARTICLE SYSTEM (Canvas)
+// ============================================================
+(function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouseX = -9999, mouseY = -9999;
+  let w, h;
+  let isMobile = window.innerWidth < 768;
+  let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (isReducedMotion) return;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Touch support
+  document.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    if (touch) { mouseX = touch.clientX; mouseY = touch.clientY; }
+  }, { passive: true });
+  document.addEventListener('touchend', () => { mouseX = -9999; mouseY = -9999; }, { passive: true });
+  document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+  // Colors — will be updated on theme change
+  let pColors = [];
+  function getParticleColors() {
+    const style = getComputedStyle(document.documentElement);
+    return [
+      style.getPropertyValue('--particle-color-1').trim(),
+      style.getPropertyValue('--particle-color-2').trim(),
+      style.getPropertyValue('--particle-color-3').trim(),
+      style.getPropertyValue('--particle-color-4').trim()
+    ];
+  }
+
+  pColors = getParticleColors();
+
+  const COUNT = isMobile ? 60 : 120;
+
+  class Particle {
+    constructor() { this.reset(true); }
+
+    reset(initial) {
+      this.x = Math.random() * w;
+      this.y = initial ? Math.random() * h : -30;
+      const r = Math.random();
+
+      // More visible: larger sizes, higher opacity
+      this.isBright = r < 0.18;
+      this.size = this.isBright
+        ? 2.5 + Math.random() * 3.5
+        : 1.5 + Math.random() * 3;
+
+      this.speedX = (Math.random() - 0.5) * (isMobile ? 0.2 : 0.35);
+      this.speedY = (Math.random() - 0.5) * (isMobile ? 0.2 : 0.35);
+      this.color = pColors[Math.floor(Math.random() * pColors.length)];
+      this.baseOpacity = 0.3 + Math.random() * 0.45;  // Higher base
+      this.opacity = this.baseOpacity;
+      this.phase = Math.random() * Math.PI * 2;
+      this.speed = 0.006 + Math.random() * 0.012;
+      this.shape = Math.random();  // 0=circle, 1=diamond (light theme only)
+    }
+
+    update(time) {
+      // Mouse interaction — stronger force
+      const dx = mouseX - this.x;
+      const dy = mouseY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const interactRadius = isMobile ? 150 : 280;
+      if (dist < interactRadius) {
+        const force = (1 - dist / interactRadius) * (isMobile ? 0.008 : 0.006);
+        this.speedX += (dx / dist) * force;
+        this.speedY += (dy / dist) * force;
+        // Brighten near cursor
+        this.opacity = Math.min(1, this.baseOpacity + (1 - dist / interactRadius) * 0.4);
+      }
+
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.speedX *= 0.993;
+      this.speedY *= 0.993;
+
+      // Gentle pulse
+      if (Math.abs(mouseX + 9999) < 1) {  // Mouse is away
+        this.opacity = this.baseOpacity + Math.sin(time * this.speed + this.phase) * 0.15;
+        if (this.opacity < 0) this.opacity = 0;
+      }
+
+      // Wrap
+      if (this.x < -40) this.x = w + 40;
+      if (this.x > w + 40) this.x = -40;
+      if (this.y < -40) this.y = h + 40;
+      if (this.y > h + 40) this.y = -40;
+    }
+
+    draw() {
+      const isDark = currentTheme === 'dark';
+
+      if (isDark) {
+        // Dark theme: glowing stars
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        const opacity = Math.min(1, this.opacity);
+        ctx.fillStyle = `rgba(${this.color}, ${opacity})`;
+        ctx.fill();
+
+        // Glow for bright stars
+        if (this.isBright) {
+          // Outer glow
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.color}, ${opacity * 0.12})`;
+          ctx.fill();
+          // Star cross
+          ctx.strokeStyle = `rgba(${this.color}, ${opacity * 0.15})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(this.x - this.size * 4, this.y);
+          ctx.lineTo(this.x + this.size * 4, this.y);
+          ctx.moveTo(this.x, this.y - this.size * 4);
+          ctx.lineTo(this.x, this.y + this.size * 4);
+          ctx.stroke();
+        }
+      } else {
+        // Light theme: decorative sparkles and soft shapes
+        ctx.beginPath();
+        if (this.shape < 0.3) {
+          // Diamond shape
+          const s = this.size * 1.8;
+          ctx.moveTo(this.x, this.y - s);
+          ctx.lineTo(this.x + s * 0.6, this.y);
+          ctx.lineTo(this.x, this.y + s);
+          ctx.lineTo(this.x - s * 0.6, this.y);
+          ctx.closePath();
+        } else {
+          // Soft circle
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        }
+        const opacity = Math.min(0.7, this.opacity);
+        ctx.fillStyle = `rgba(${this.color}, ${opacity})`;
+        ctx.fill();
+
+        // Soft glow for bright ones
+        if (this.isBright) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.color}, ${opacity * 0.1})`;
+          ctx.fill();
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+  function animate(time) {
+    ctx.clearRect(0, 0, w, h);
+    const isDark = currentTheme === 'dark';
+    const connectDist = isMobile ? 110 : 170;
+
+    // Connections between particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connectDist) {
+          const alpha = (1 - dist / connectDist) * (isDark ? 0.15 : 0.07);
+          const avgOpacity = (particles[i].opacity + particles[j].opacity) / 2;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(${particles[i].color}, ${alpha * avgOpacity})`;
+          ctx.lineWidth = isDark ? 0.6 : 0.4;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Mouse connection rays
+    if (!isMobile) {
+      let connected = 0;
+      for (const p of particles) {
+        if (connected > 10) break;
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const rayDist = isDark ? 280 : 220;
+        if (dist < rayDist) {
+          const alpha = (1 - dist / rayDist) * (isDark ? 0.14 : 0.08);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouseX, mouseY);
+          ctx.strokeStyle = `rgba(${p.color}, ${alpha})`;
+          ctx.lineWidth = isDark ? 0.5 : 0.35;
+          ctx.stroke();
+          connected++;
+        }
+      }
+
+      // Cursor glow
+      if (mouseX > 0 && mouseY > 0) {
+        const g = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, isDark ? 50 : 35);
+        if (isDark) {
+          g.addColorStop(0, 'rgba(168,85,247,0.08)');
+          g.addColorStop(1, 'rgba(168,85,247,0)');
+        } else {
+          g.addColorStop(0, 'rgba(200,162,211,0.06)');
+          g.addColorStop(1, 'rgba(200,162,211,0)');
+        }
+        ctx.fillStyle = g;
+        ctx.fillRect(mouseX - 50, mouseY - 50, 100, 100);
+      }
+    }
+
+    for (const p of particles) {
+      p.update(time);
+      p.draw();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  // Expose color update for theme switching
+  window.updateParticleColors = function() {
+    pColors = getParticleColors();
+    for (const p of particles) {
+      p.color = pColors[Math.floor(Math.random() * pColors.length)];
+    }
+  };
+})();
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(currentTheme);
+
+  // Show empty grid on load
+  renderEmptyGrid();
+
+  const input = document.getElementById('dateInput');
+  const form = document.getElementById('birthForm');
+  const err = document.getElementById('errorMsg');
+  const results = document.getElementById('results');
+  const shareBtn = document.getElementById('shareBtn');
+  const langToggle = document.getElementById('langToggle');
+  const themeToggle = document.getElementById('themeToggle');
+
+  input.addEventListener('input', () => {
+    const caret = input.selectionStart;
+    const before = input.value;
+    input.value = formatInput(input.value);
+    const diff = input.value.length - before.length;
+    const pos = Math.max(0, caret + diff);
+    try { input.setSelectionRange(pos, pos); } catch {}
+    err.classList.remove('show');
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const val = input.value.trim();
+    if (!validateDate(val)) {
+      err.classList.add('show');
+      input.focus();
+      return;
+    }
+    err.classList.remove('show');
+    const data = calculate(val);
+    renderAll(data, val);
+    history.replaceState(null, '', '#' + encodeURIComponent(val));
+    results.classList.remove('visible');
+    requestAnimationFrame(() => {
+      results.style.display = 'block';
+      results.classList.add('visible');
+    });
+  });
+
+  shareBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      shareBtn.classList.add('copied');
+      const label = document.getElementById('shareLabel');
+      label.textContent = T[lang].copied;
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        label.textContent = T[lang].shareLabel;
+      }, 2000);
+    });
+  });
+
+  langToggle.addEventListener('click', () => {
+    lang = lang === 'ru' ? 'en' : 'ru';
+    updateLang();
+  });
+
+  themeToggle.addEventListener('click', () => {
+    applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+
+  // Hash init
+  const hashDate = decodeURIComponent(window.location.hash.replace('#', ''));
+  if (hashDate && validateDate(hashDate)) {
+    input.value = hashDate;
+    const data = calculate(hashDate);
+    renderAll(data, hashDate);
+    results.style.display = 'block';
+    results.classList.add('visible');
+  }
+});
+</script>
+</body>
+</html>
