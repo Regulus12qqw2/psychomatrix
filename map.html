@@ -12,6 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://basemaps.cartocdn.com">
+  <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -430,6 +432,8 @@ body {
   height: 70vh; min-height: 500px;
   /* dvh = dynamic viewport height (mobile-safe, accounts for URL bar) */
   height: 70dvh;
+  /* Ensure layout even before JS runs */
+  contain: layout style;
 }
 @supports not (height: 70dvh) {
   .map-card { height: 70vh; }
@@ -446,6 +450,11 @@ body {
   background: var(--bg-mid1);
   z-index: 1;
   width: 100%; height: 100%;
+  /* Critical for mobile touch gestures on the map */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Leaflet container override for our rounded card */
@@ -454,6 +463,7 @@ body {
   background: var(--bg-mid1);
   outline: none;
   width: 100%; height: 100%;
+  touch-action: none;
 }
 .leaflet-container a { color: var(--accent-lilac-dark); }
 [data-theme="dark"] .leaflet-container a { color: var(--accent-lilac); }
@@ -1126,7 +1136,8 @@ body {
   .form-btn { padding: 11px 16px; font-size: 14px; }
   .error-msg { font-size: 11px; }
 
-  .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; }
+  .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; min-height: 55dvh; }
+  #map { min-height: 380px; }
   .map-zoom { top: 10px; left: 10px; }
   .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
   .map-zoom-btn svg { width: 16px; height: 16px; }
@@ -1663,7 +1674,12 @@ function initMap() {
       zoomControl: false,
       attributionControl: true,
       fadeAnimation: true,
-      zoomAnimation: true
+      zoomAnimation: true,
+      tap: true,              // Required for touch devices (iOS/Android)
+      touchZoom: true,
+      dragging: true,
+      zoomSnap: 0.25,
+      wheelDebounceTime: 40
     });
 
     updateTiles();
@@ -1680,11 +1696,18 @@ function initMap() {
       map.flyTo([25, 10], 2, { duration: 0.8 });
     });
 
-    // Force Leaflet to recalculate container size (fixes mobile rendering)
-    setTimeout(() => { if (map) map.invalidateSize(); }, 100);
-    setTimeout(() => { if (map) map.invalidateSize(); }, 600);
+    // Force Leaflet to recalculate container size.
+    // Critical on mobile: map-card has scaleIn animation (0.7s) that
+    // changes container dimensions; Leaflet needs invalidateSize after it.
+    const recalc = () => { if (map) map.invalidateSize(); };
+    setTimeout(recalc, 50);
+    setTimeout(recalc, 200);
+    setTimeout(recalc, 800);   // after scaleIn animation
+    setTimeout(recalc, 1500);  // safety net
+    window.addEventListener('orientationchange', () => setTimeout(recalc, 300));
+    window.addEventListener('resize', () => setTimeout(recalc, 100));
 
-    // Hide loader when map is ready
+    // Hide loader ASAP (don't wait for whenReady — it can hang on mobile)
     let loaderHidden = false;
     const hideLoader = () => {
       if (loaderHidden) return;
@@ -1692,17 +1715,16 @@ function initMap() {
       const el = document.getElementById('mapLoader');
       if (el) el.classList.add('hidden');
     };
-    map.whenReady(() => {
-      setTimeout(hideLoader, 400);
-    });
-
-    // Safety fallback: always hide loader after 4s no matter what
-    setTimeout(hideLoader, 4000);
-
-    // Also hide on first tiles loaded
+    // Hide after a short delay (let first paint happen)
+    setTimeout(hideLoader, 300);
+    // Also hide on map ready (in case it fires later)
+    map.whenReady(() => setTimeout(hideLoader, 100));
+    // And on first tile batch loaded
     if (tileLayer) {
-      tileLayer.on('load', () => setTimeout(hideLoader, 200));
+      tileLayer.on('load', () => setTimeout(hideLoader, 100));
     }
+    // Ultimate safety fallback
+    setTimeout(hideLoader, 3000);
 
     // Map click → find nearest line
     map.on('click', e => {
@@ -2566,8 +2588,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize all planets visible
   PLANETS.forEach(p => { visiblePlanets[p.id] = true; });
 
-  // Init map
-  initMap();
+  // Init map after layout is fully calculated
+  // requestAnimationFrame ensures the DOM has final dimensions
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      initMap();
+      // Extra invalidateSize after Leaflet is ready + CSS animations
+      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+      setTimeout(() => { if (map) map.invalidateSize(); }, 900);
+    });
+  });
   applyLang();
 
   // Legend toggle (mobile)
