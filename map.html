@@ -2029,9 +2029,13 @@ function roundRect(ctx, x, y, w, h, r) {
 //  CANVAS MAP — pan/zoom (with animation)
 // ============================================================
 function panTo(lat, lng, newZoom) {
+  // Normalize the target longitude to the nearest equivalent of fromLng
+  const fromLng = canvasMap.centerLng;
+  let toLng = lng;
+  while (toLng - fromLng > 180)  toLng -= 360;
+  while (toLng - fromLng < -180) toLng += 360;
   const targetZoom = (typeof newZoom === 'number') ? newZoom : canvasMap.zoom;
   const fromLat = canvasMap.centerLat;
-  const fromLng = canvasMap.centerLng;
   const fromZoom = canvasMap.zoom;
   const start = performance.now();
   const dur = 800;
@@ -2040,7 +2044,7 @@ function panTo(lat, lng, newZoom) {
     const t = Math.min(1, (now - start) / dur);
     const e = 1 - Math.pow(1 - t, 3); // easeOutCubic
     canvasMap.centerLat = fromLat + (lat - fromLat) * e;
-    canvasMap.centerLng = fromLng + (lng - fromLng) * e;
+    canvasMap.centerLng = fromLng + (toLng - fromLng) * e;
     canvasMap.zoom = fromZoom + (targetZoom - fromZoom) * e;
     requestRender();
     if (t < 1) requestAnimationFrame(step);
@@ -2057,6 +2061,7 @@ function setZoom(newZoom) {
 // ============================================================
 //  CANVAS MAP — input handlers
 // ============================================================
+let lastInteractionWasTouch = 0;
 function getCanvasPoint(clientX, clientY) {
   const rect = canvasMap.canvas.getBoundingClientRect();
   return { x: clientX - rect.left, y: clientY - rect.top };
@@ -2082,11 +2087,15 @@ function onPointerMove(x, y) {
   canvasMap.centerLat = canvasMap.panning.startLat + dy / bs;
   // Clamp latitude to avoid pole wrap
   canvasMap.centerLat = Math.max(-72, Math.min(72, canvasMap.centerLat));
+  // Wrap longitude to keep it in a sane range (avoids float drift)
+  while (canvasMap.centerLng > 180) canvasMap.centerLng -= 360;
+  while (canvasMap.centerLng < -180) canvasMap.centerLng += 360;
   requestRender();
 }
 
 function onPointerUp(x, y, isTouch) {
   canvasMap.canvas.classList.remove('dragging');
+  if (isTouch) lastInteractionWasTouch = performance.now();
   if (canvasMap.panning && !canvasMap.panning.moved && !isAnimating) {
     const ll = screenToLatLng(x, y);
     onMapClick(ll);
@@ -2152,6 +2161,8 @@ function onTouchEnd(e) {
 }
 
 function onMouseDown(e) {
+  // Suppress synthetic mouse events that follow a touch
+  if (performance.now() - lastInteractionWasTouch < 600) return;
   e.preventDefault();
   const p = getCanvasPoint(e.clientX, e.clientY);
   onPointerDown(p.x, p.y);
@@ -2164,6 +2175,7 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e) {
+  if (performance.now() - lastInteractionWasTouch < 600) return;
   const p = getCanvasPoint(e.clientX, e.clientY);
   onPointerUp(p.x, p.y, false);
 }
@@ -2179,6 +2191,8 @@ function onWheel(e) {
   canvasMap.centerLng += (before.lng - after.lng);
   canvasMap.centerLat += (before.lat - after.lat);
   canvasMap.centerLat = Math.max(-72, Math.min(72, canvasMap.centerLat));
+  while (canvasMap.centerLng > 180) canvasMap.centerLng -= 360;
+  while (canvasMap.centerLng < -180) canvasMap.centerLng += 360;
   requestRender();
 }
 
@@ -3012,8 +3026,9 @@ document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       initMap();
-      // Re-trigger render after CSS scaleIn animation finishes
-      setTimeout(requestRender, 700);
+      // Re-resize & re-render after CSS scaleIn animation finishes
+      setTimeout(() => { resizeCanvas(); requestRender(); }, 700);
+      setTimeout(() => { resizeCanvas(); requestRender(); }, 1500);
     });
   });
   applyLang();
