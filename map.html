@@ -1,0 +1,2727 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Локационная астрология — Карта планетных линий по дате рождения</title>
+  <meta name="description" content="Постройте интерактивную карту локаций по дате рождения. Линии планет MC, IC, ASC, DS на карте мира. Локационная астрология онлайн — бесплатный расчёт.">
+  <meta name="keywords" content="локационная астрология, astrolocality, карта планет, линии MC IC ASC DS, астро*карта, локации планет">
+  <meta name="theme-color" content="#FAF5F8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0C0A14" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== Light Theme (default) ===== */
+:root, [data-theme="light"] {
+  --bg-start: #FAF5F8;
+  --bg-mid1: #F5EEF8;
+  --bg-mid2: #F8F0F2;
+  --bg-end: #F2EEF8;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-primary: #3D3244;
+  --text-secondary: #7B6E82;
+  --text-muted: #8B7A96;
+  --accent-lilac: #C8A2D3;
+  --accent-lilac-light: #E8D5EE;
+  --accent-lilac-dark: #7B5A8F;
+  --accent-pink: #F2C6CC;
+  --accent-pink-dark: #8B4A56;
+  --accent-lavender: #9B8EC4;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --orb1-bg: #C8A2D3;
+  --orb2-bg: #F2C6CC;
+  --orb3-bg: #9B8EC4;
+  --orb4-bg: #B8D4E3;
+  --orb1-opacity: 0.2;
+  --orb2-opacity: 0.2;
+  --orb3-opacity: 0.15;
+  --orb4-opacity: 0.1;
+  --ring-border: #C8A2D3;
+  --ring-opacity: 0.03;
+  --input-bg: rgba(255,255,255,0.7);
+  --input-border: rgba(200,162,211,0.2);
+  --input-placeholder: rgba(200,162,211,0.4);
+  --input-focus-border: rgba(200,162,211,0.5);
+  --input-focus-bg: rgba(255,255,255,0.9);
+  --input-focus-shadow: rgba(200,162,211,0.12);
+  --btn-gradient-1: #C8A2D3;
+  --btn-gradient-2: #9B8EC4;
+  --btn-shadow: rgba(200,162,211,0.25);
+  --btn-shadow-hover: rgba(200,162,211,0.35);
+  --card-shadow: rgba(200,162,211,0.1);
+  --header-icon-bg-1: #C8A2D3;
+  --header-icon-bg-2: #F2C6CC;
+  --header-icon-shadow: rgba(200,162,211,0.3);
+  --header-title-1: #9B8EC4;
+  --header-title-2: #C8A2D3;
+  --header-title-3: #F2C6CC;
+  --error-color: #E57373;
+  --footer-border: rgba(200,162,211,0.15);
+  --scrollbar-thumb: rgba(200,162,211,0.3);
+  --scrollbar-thumb-hover: rgba(200,162,211,0.5);
+  --toggle-color: #5B4A65;
+  --toggle-icon-color: #9B8EC4;
+  --glass-fallback: rgba(255, 255, 255, 0.85);
+
+  /* Map-specific */
+  --map-tooltip-bg: rgba(255, 255, 255, 0.92);
+  --map-zoom-btn-bg: rgba(255, 255, 255, 0.7);
+  --map-zoom-btn-hover: rgba(255, 255, 255, 0.9);
+  --map-loader-bg: rgba(255, 255, 255, 0.6);
+  --map-attr-bg: rgba(255, 255, 255, 0.5);
+  --map-attr-color: #5B4A65;
+  --map-divider: rgba(200,162,211,0.15);
+  --map-row-hover: rgba(200,162,211,0.08);
+  --map-line-glow: rgba(255,255,255,0.6);
+
+  /* Particle system */
+  --particle-color-1: 200, 162, 211;
+  --particle-color-2: 242, 198, 204;
+  --particle-color-3: 155, 142, 196;
+  --particle-color-4: 184, 212, 227;
+  --particle-base-opacity: 0.35;
+  --particle-bright-opacity: 0.55;
+  --particle-connection-alpha: 0.06;
+  --particle-vignette: radial-gradient(ellipse at center, transparent 55%, rgba(250,245,248,0.5) 100%);
+  --particle-grid: none;
+
+  /* Planet colors */
+  --planet-sun: #C8A2D3;
+  --planet-moon: #F2C6CC;
+  --planet-mercury: #9B8EC4;
+  --planet-venus: #B8D4E3;
+  --planet-mars: #D4A5A5;
+  --planet-jupiter: #E8C170;
+  --planet-saturn: #A8B89C;
+  --planet-uranus: #7FB8C9;
+  --planet-neptune: #5A7FB8;
+  --planet-pluto: #8B7AA0;
+  --planet-node: #9CA8C4;
+}
+
+/* ===== Dark Theme ===== */
+[data-theme="dark"] {
+  --bg-start: #0C0A14;
+  --bg-mid1: #110E1C;
+  --bg-mid2: #0F0D18;
+  --bg-end: #100D1A;
+  --glass-bg: rgba(28, 24, 40, 0.75);
+  --glass-bg-strong: rgba(28, 24, 40, 0.92);
+  --glass-border: rgba(155, 130, 200, 0.12);
+  --text-primary: #F0ECF5;
+  --text-secondary: #B0A0C4;
+  --text-muted: #8878A4;
+  --accent-lilac: #C8A2E0;
+  --accent-pink: #F0A0B8;
+  --accent-lavender: #B8A0E8;
+  --orb1-bg: #8B60C0;
+  --orb2-bg: #C06080;
+  --orb3-bg: #7050B0;
+  --orb4-bg: #506888;
+  --orb1-opacity: 0.08;
+  --orb2-opacity: 0.07;
+  --orb3-opacity: 0.06;
+  --orb4-opacity: 0.05;
+  --ring-border: #8B60C0;
+  --ring-opacity: 0.04;
+  --input-bg: rgba(28, 24, 40, 0.8);
+  --input-border: rgba(155, 130, 200, 0.2);
+  --input-placeholder: rgba(155,130,200,0.35);
+  --input-focus-border: rgba(200,162,224,0.5);
+  --input-focus-bg: rgba(35, 30, 50, 0.9);
+  --input-focus-shadow: rgba(200,162,224,0.15);
+  --btn-gradient-1: #A07CC8;
+  --btn-gradient-2: #8060B0;
+  --btn-shadow: rgba(160,124,200,0.25);
+  --btn-shadow-hover: rgba(160,124,200,0.4);
+  --card-shadow: rgba(0,0,0,0.4);
+  --header-icon-bg-1: #A07CC8;
+  --header-icon-bg-2: #D07090;
+  --header-icon-shadow: rgba(160,124,200,0.3);
+  --header-title-1: #B8A0E8;
+  --header-title-2: #DCC0F0;
+  --header-title-3: #FFC8D8;
+  --error-color: #FF8A80;
+  --footer-border: rgba(155,130,200,0.1);
+  --scrollbar-thumb: rgba(155,130,200,0.25);
+  --scrollbar-thumb-hover: rgba(155,130,200,0.4);
+  --toggle-color: #D8D0E8;
+  --toggle-icon-color: #B8A0E8;
+  --glass-fallback: rgba(28, 24, 40, 0.92);
+
+  --map-tooltip-bg: rgba(28, 24, 40, 0.95);
+  --map-zoom-btn-bg: rgba(28, 24, 40, 0.7);
+  --map-zoom-btn-hover: rgba(40, 34, 56, 0.9);
+  --map-loader-bg: rgba(28, 24, 40, 0.6);
+  --map-attr-bg: rgba(28, 24, 40, 0.5);
+  --map-attr-color: #B0A0C4;
+  --map-divider: rgba(155,130,200,0.12);
+  --map-row-hover: rgba(155,130,200,0.08);
+  --map-line-glow: rgba(200,162,224,0.4);
+
+  --particle-color-1: 168, 85, 247;
+  --particle-color-2: 108, 92, 231;
+  --particle-color-3: 139, 92, 246;
+  --particle-color-4: 192, 132, 252;
+  --particle-base-opacity: 0.45;
+  --particle-bright-opacity: 0.75;
+  --particle-connection-alpha: 0.1;
+  --particle-vignette: radial-gradient(ellipse at center, transparent 50%, rgba(12,10,20,0.65) 100%);
+  --particle-grid: linear-gradient(rgba(155,130,200,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(155,130,200,0.03) 1px, transparent 1px);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-mid1) 30%, var(--bg-mid2) 60%, var(--bg-end) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.3s ease;
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* ===== Canvas Particle System ===== */
+#particles-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.vignette-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--particle-vignette);
+  transition: background 0.4s ease;
+}
+.grid-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: var(--particle-grid);
+  background-size: 70px 70px;
+  transition: background-image 0.4s ease;
+}
+
+/* ===== Background Orbs ===== */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-orbs span {
+  position: absolute; border-radius: 50%; filter: blur(100px);
+}
+.bg-orbs .o1 { width: 400px; height: 400px; background: var(--orb1-bg); opacity: var(--orb1-opacity); top: -160px; left: -96px; animation: float 6s ease-in-out infinite; }
+.bg-orbs .o2 { width: 350px; height: 350px; background: var(--orb2-bg); opacity: var(--orb2-opacity); bottom: -96px; right: -64px; animation: float 8s ease-in-out 2s infinite; }
+.bg-orbs .o3 { width: 300px; height: 300px; background: var(--orb3-bg); opacity: var(--orb3-opacity); top: 33%; left: 50%; transform: translate(-50%,-50%); animation: float 10s ease-in-out 4s infinite; }
+.bg-orbs .o4 { width: 200px; height: 200px; background: var(--orb4-bg); opacity: var(--orb4-opacity); bottom: 25%; left: 25%; animation: float 6s ease-in-out 1s infinite; }
+
+.bg-ring {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 600px; opacity: var(--ring-opacity); z-index: 0; pointer-events: none;
+  animation: rotate-slow 20s linear infinite;
+}
+.bg-ring div { width: 100%; height: 100%; border-radius: 50%; border: 2px dashed var(--ring-border); }
+
+/* ===== Animations ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.02); }
+}
+@keyframes rotate-slow {
+  from { transform: translate(-50%,-50%) rotate(0deg); }
+  to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin-slow {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Glass ===== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+@supports not (backdrop-filter: blur(20px)) {
+  .glass { background: var(--glass-fallback); }
+}
+
+/* ===== Layout ===== */
+.container {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 24px 12px 48px;
+}
+@media (min-width: 640px) {
+  .container { padding: 40px 20px 60px; }
+}
+
+/* ===== Top Bar ===== */
+.top-bar {
+  position: fixed; top: 12px; right: 12px; z-index: 50;
+  display: flex; align-items: center; gap: 6px;
+}
+@media (min-width: 640px) {
+  .top-bar { top: 16px; right: 16px; gap: 8px; }
+}
+
+.toggle-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 50px;
+  font-size: 13px; font-weight: 500; color: var(--toggle-color);
+  cursor: pointer; border: none; outline: none;
+  text-decoration: none;
+  transition: box-shadow 0.3s, transform 0.15s, background 0.3s, border-color 0.3s, color 0.3s;
+}
+.toggle-btn:hover { box-shadow: 0 8px 24px var(--card-shadow); transform: scale(1.05); }
+.toggle-btn:active { transform: scale(0.95); }
+.toggle-btn svg { width: 16px; height: 16px; color: var(--toggle-icon-color); transition: color 0.3s; }
+@media (min-width: 640px) {
+  .toggle-btn { padding: 10px 18px; font-size: 14px; }
+}
+.theme-icon { transition: transform 0.3s ease; }
+.toggle-btn:active .theme-icon { transform: rotate(180deg); }
+
+/* ===== Header ===== */
+.header { text-align: center; margin-bottom: 24px; }
+@media (min-width: 640px) { .header { margin-bottom: 32px; } }
+
+.header-icon-wrap {
+  display: inline-block; margin-bottom: 12px;
+  animation: spin-slow 4s ease-in-out infinite;
+}
+.header-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--header-icon-bg-1), var(--header-icon-bg-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px var(--header-icon-shadow);
+  transition: background 0.4s ease, box-shadow 0.3s ease;
+}
+@media (min-width: 640px) {
+  .header-icon { width: 56px; height: 56px; }
+}
+.header-icon svg { width: 24px; height: 24px; color: white; }
+@media (min-width: 640px) {
+  .header-icon svg { width: 28px; height: 28px; }
+}
+
+.header h1 {
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(90deg, var(--header-title-1), var(--header-title-2), var(--header-title-3));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 6px;
+  transition: background 0.4s ease;
+}
+@media (min-width: 640px) { .header h1 { font-size: 40px; } }
+
+.header p {
+  color: var(--text-secondary); font-size: 14px; line-height: 1.5;
+  max-width: 480px; margin: 0 auto; padding: 0 8px;
+  transition: color 0.3s ease;
+}
+@media (min-width: 640px) { .header p { font-size: 16px; max-width: 520px; } }
+
+/* ===== Form ===== */
+.form-card {
+  max-width: 480px; margin: 0 auto 24px;
+  border-radius: var(--radius-xl); padding: 16px;
+  box-shadow: 0 12px 40px var(--card-shadow);
+  animation: fadeUp 0.5s ease both 0.15s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 640px) {
+  .form-card { padding: 24px; margin-bottom: 32px; border-radius: 28px; }
+}
+
+.form-row { display: flex; gap: 8px; align-items: center; }
+.form-row + .form-row { margin-top: 8px; }
+.form-label {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .form-label { font-size: 11px; } }
+
+.form-input {
+  flex: 1; padding: 10px 14px;
+  background: var(--input-bg); border: 1px solid var(--input-border);
+  border-radius: var(--radius); color: var(--text-primary);
+  font-size: 15px; font-family: inherit; outline: none;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, color 0.3s;
+}
+.form-input::placeholder { color: var(--input-placeholder); }
+.form-input:focus {
+  border-color: var(--input-focus-border); background: var(--input-focus-bg);
+  box-shadow: 0 0 0 3px var(--input-focus-shadow);
+}
+@media (min-width: 640px) { .form-input { padding: 12px 16px; font-size: 16px; } }
+
+.form-btn {
+  width: 100%; padding: 10px 20px; margin-top: 10px;
+  background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+  border: none; border-radius: var(--radius); color: white;
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: box-shadow 0.3s, transform 0.15s, background 0.3s;
+  box-shadow: 0 8px 20px var(--btn-shadow);
+}
+.form-btn:hover { box-shadow: 0 12px 28px var(--btn-shadow-hover); transform: translateY(-1px); }
+.form-btn:active { transform: translateY(0); }
+@media (min-width: 640px) { .form-btn { padding: 12px 24px; font-size: 15px; } }
+
+.error-msg {
+  font-size: 12px; color: var(--error-color); margin-top: 8px; padding-left: 4px;
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height 0.3s, opacity 0.3s;
+}
+.error-msg.show { max-height: 40px; opacity: 1; }
+
+/* ===== Section label ===== */
+.section-label {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) { .section-label { font-size: 11px; margin-bottom: 12px; } }
+
+/* ===== Map ===== */
+.map-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 12px 40px var(--card-shadow);
+  animation: scaleIn 0.5s ease both 0.2s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  height: 70vh; min-height: 500px;
+  /* dvh = dynamic viewport height (mobile-safe, accounts for URL bar) */
+  height: 70dvh;
+}
+@supports not (height: 70dvh) {
+  .map-card { height: 70vh; }
+}
+@media (max-width: 768px) {
+  .map-card { height: 60vh; min-height: 420px; border-radius: 20px; height: 60dvh; }
+}
+@media (min-width: 1400px) {
+  .map-card { height: 75vh; min-height: 600px; height: 75dvh; }
+}
+
+#map {
+  position: absolute; inset: 0;
+  background: var(--bg-mid1);
+  z-index: 1;
+  width: 100%; height: 100%;
+}
+
+/* Leaflet container override for our rounded card */
+.leaflet-container {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-mid1);
+  outline: none;
+  width: 100%; height: 100%;
+}
+.leaflet-container a { color: var(--accent-lilac-dark); }
+[data-theme="dark"] .leaflet-container a { color: var(--accent-lilac); }
+
+/* Tile fade-in for smooth theme switching */
+.leaflet-tile {
+  filter: saturate(0.85);
+  transition: filter 0.4s ease;
+}
+[data-theme="dark"] .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.7);
+}
+
+/* Map zoom controls */
+.map-zoom {
+  position: absolute; top: 12px; left: 12px; z-index: 10;
+  display: flex; flex-direction: column; gap: 4px;
+  border-radius: 14px; padding: 4px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+}
+@media (min-width: 640px) {
+  .map-zoom { top: 16px; left: 16px; gap: 6px; }
+}
+.map-zoom-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  background: var(--map-zoom-btn-bg);
+  border: none; border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer; outline: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.map-zoom-btn:hover {
+  background: var(--map-zoom-btn-hover);
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transform: scale(1.05);
+}
+.map-zoom-btn:active { transform: scale(0.92); }
+.map-zoom-btn svg { width: 18px; height: 18px; }
+
+/* Legend toggle button (mobile) */
+.map-legend-toggle {
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  display: none;
+  align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: var(--map-zoom-btn-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  color: var(--text-primary);
+  font-family: inherit; font-size: 12px; font-weight: 500;
+  cursor: pointer; outline: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px var(--card-shadow);
+  transition: background 0.2s, transform 0.15s;
+}
+.map-legend-toggle:hover { background: var(--map-zoom-btn-hover); }
+.map-legend-toggle svg { width: 14px; height: 14px; color: var(--text-secondary); }
+@media (max-width: 768px) {
+  .map-legend-toggle { display: inline-flex; }
+}
+
+/* Legend panel */
+.map-legend {
+  position: absolute; top: 12px; right: 12px; z-index: 9;
+  width: 240px; max-height: calc(100% - 24px);
+  border-radius: 16px; padding: 14px;
+  overflow-y: auto;
+  box-shadow: 0 8px 28px var(--card-shadow);
+  animation: fadeUp 0.4s ease both 0.3s;
+}
+@media (min-width: 640px) {
+  .map-legend { top: 16px; right: 16px; padding: 16px; width: 260px; }
+}
+@media (max-width: 768px) {
+  .map-legend {
+    top: auto; bottom: 0; right: 0; left: 0; width: 100%;
+    max-height: 65vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(calc(100% - 56px));
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    padding: 12px 14px 16px;
+  }
+  .map-legend.expanded { transform: translateY(0); }
+}
+
+.legend-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--map-divider);
+}
+.legend-title {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.legend-action {
+  background: none; border: none; padding: 4px 10px;
+  border-radius: 50px; cursor: pointer;
+  font-size: 11px; font-weight: 500;
+  color: var(--accent-lavender);
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+.legend-action:hover { background: var(--map-row-hover); }
+
+.legend-list { display: flex; flex-direction: column; gap: 2px; }
+
+.legend-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  user-select: none;
+}
+.legend-row:hover { background: var(--map-row-hover); transform: translateX(2px); }
+.legend-row.disabled { opacity: 0.4; }
+.legend-row .planet-dot {
+  flex-shrink: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--planet-color, var(--accent-lilac));
+  box-shadow: 0 0 6px var(--planet-color, var(--accent-lilac));
+}
+.legend-row .planet-symbol {
+  font-size: 14px; line-height: 1;
+  color: var(--text-primary);
+  width: 18px; text-align: center;
+}
+.legend-row .planet-name {
+  flex: 1;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-primary);
+}
+.legend-row .planet-check {
+  flex-shrink: 0;
+  position: relative;
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--map-divider);
+  border-radius: 4px;
+  background: transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+.legend-row .planet-check.checked {
+  background: var(--planet-color, var(--accent-lilac));
+  border-color: var(--planet-color, var(--accent-lilac));
+}
+.legend-row .planet-check.checked::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 1px;
+  width: 5px; height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Line type legend */
+.legend-types {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--map-divider);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.legend-type {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--text-secondary);
+}
+.legend-type .type-dot {
+  width: 20px; height: 2px; border-radius: 1px;
+  background: var(--text-muted);
+}
+.legend-type .type-dot.mc { background: var(--accent-lilac); }
+.legend-type .type-dot.ic { background: var(--accent-pink); }
+.legend-type .type-dot.asc { background: var(--accent-lavender); }
+.legend-type .type-dot.ds { background: var(--planet-mars); }
+
+/* Mobile drag handle */
+.legend-drag-handle {
+  display: none;
+  width: 36px; height: 4px;
+  background: var(--map-divider);
+  border-radius: 2px;
+  margin: 0 auto 10px;
+}
+@media (max-width: 768px) {
+  .legend-drag-handle { display: block; }
+}
+
+/* Map loader */
+.map-loader {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px;
+  background: var(--map-loader-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.4s, visibility 0.4s;
+}
+.map-loader.hidden {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+.loader-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--glass-border);
+  border-top-color: var(--accent-lilac);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+.map-loader span {
+  font-size: 13px; color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Click tooltip */
+.map-click-tooltip {
+  position: absolute; z-index: 15;
+  display: none;
+  max-width: 260px;
+  padding: 10px 14px;
+  background: var(--map-tooltip-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px var(--card-shadow);
+  color: var(--text-primary);
+  font-size: 12px; line-height: 1.5;
+  animation: fadeUp 0.2s ease;
+  pointer-events: none;
+}
+.map-click-tooltip.show { display: block; }
+.map-click-tooltip .ct-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--map-divider);
+}
+.map-click-tooltip .ct-symbol {
+  font-size: 16px;
+  color: var(--tooltip-color, var(--accent-lilac));
+}
+.map-click-tooltip .ct-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-primary);
+}
+.map-click-tooltip .ct-type {
+  font-size: 10px; font-weight: 500;
+  color: var(--tooltip-color, var(--accent-lilac));
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-left: auto;
+}
+.map-click-tooltip .ct-dist {
+  font-size: 10px; color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.map-click-tooltip .ct-text {
+  font-size: 11px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+.map-click-tooltip .ct-close {
+  position: absolute; top: 6px; right: 6px;
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 4px;
+  pointer-events: auto;
+  transition: background 0.2s, color 0.2s;
+}
+.map-click-tooltip .ct-close:hover { background: var(--map-row-hover); color: var(--text-primary); }
+.map-click-tooltip .ct-close svg { width: 10px; height: 10px; }
+
+/* Map attribution */
+.leaflet-control-attribution {
+  background: var(--map-attr-bg) !important;
+  color: var(--map-attr-color) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--map-divider);
+  border-radius: 8px;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+}
+.leaflet-control-attribution a { color: var(--accent-lavender) !important; }
+
+/* Line drawing animation */
+.leaflet-overlay-pane svg path.astro-line {
+  stroke-dasharray: 6000;
+  stroke-dashoffset: 6000;
+  animation: drawLine 1.8s ease-out forwards;
+  transition: stroke-width 0.2s, opacity 0.2s, filter 0.2s;
+}
+.leaflet-overlay-pane svg path.astro-line.planet-0 { animation-delay: 0s; }
+.leaflet-overlay-pane svg path.astro-line.planet-1 { animation-delay: 0.08s; }
+.leaflet-overlay-pane svg path.astro-line.planet-2 { animation-delay: 0.16s; }
+.leaflet-overlay-pane svg path.astro-line.planet-3 { animation-delay: 0.24s; }
+.leaflet-overlay-pane svg path.astro-line.planet-4 { animation-delay: 0.32s; }
+.leaflet-overlay-pane svg path.astro-line.planet-5 { animation-delay: 0.40s; }
+.leaflet-overlay-pane svg path.astro-line.planet-6 { animation-delay: 0.48s; }
+.leaflet-overlay-pane svg path.astro-line.planet-7 { animation-delay: 0.56s; }
+.leaflet-overlay-pane svg path.astro-line.planet-8 { animation-delay: 0.64s; }
+.leaflet-overlay-pane svg path.astro-line.planet-9 { animation-delay: 0.72s; }
+.leaflet-overlay-pane svg path.astro-line.planet-10 { animation-delay: 0.80s; }
+
+.leaflet-overlay-pane svg path.astro-line:hover {
+  stroke-width: 3.5 !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 4px currentColor);
+  cursor: pointer;
+}
+
+.leaflet-overlay-pane svg path.astro-line.mc { stroke-dasharray: 0; }
+.leaflet-overlay-pane svg path.astro-line.mc.animated { stroke-dasharray: 6000; stroke-dashoffset: 6000; }
+
+.leaflet-overlay-pane svg path.astro-line-hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+/* Tooltip hint */
+.map-hint {
+  position: absolute; bottom: 16px; left: 50%; z-index: 8;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  font-size: 11px; font-weight: 500;
+  color: var(--text-secondary);
+  box-shadow: 0 4px 16px var(--card-shadow);
+  animation: fadeUp 0.4s ease 0.6s both, fadeOut 0.4s ease 5s forwards;
+  pointer-events: none;
+  white-space: nowrap;
+}
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(-50%) translateY(8px); }
+}
+
+/* ===== Destiny Card ===== */
+.destiny-card {
+  margin-top: 24px; padding: 20px;
+  border-radius: var(--radius-xl);
+  animation: fadeUp 0.5s ease both;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.destiny-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent-lilac), var(--accent-pink), var(--accent-lavender));
+  opacity: 0.7;
+}
+@media (min-width: 640px) {
+  .destiny-card { padding: 24px; }
+}
+
+.destiny-head {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--map-divider);
+}
+.destiny-pin {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-lilac), var(--accent-pink));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 14px rgba(200,162,211,0.35);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@media (min-width: 640px) {
+  .destiny-pin { width: 48px; height: 48px; font-size: 24px; }
+}
+.destiny-head-text { flex: 1; min-width: 0; }
+.destiny-eyebrow {
+  font-size: 10px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.destiny-title {
+  font-size: 18px; font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  word-break: break-word;
+}
+@media (min-width: 640px) { .destiny-title { font-size: 20px; } }
+.destiny-coords {
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 2px;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+.destiny-close {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.destiny-close:hover { background: var(--map-row-hover); color: var(--text-primary); }
+.destiny-close svg { width: 14px; height: 14px; }
+
+.destiny-summary {
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--cell-lilac-bg-1, rgba(232,213,238,0.25)), var(--cell-pink-bg-1, rgba(250,229,232,0.25)));
+  border-radius: 12px;
+  border-left: 3px solid var(--accent-lilac);
+}
+[data-theme="dark"] .destiny-summary {
+  background: linear-gradient(135deg, rgba(62,45,90,0.4), rgba(61,26,42,0.3));
+}
+@media (min-width: 640px) { .destiny-summary { font-size: 14px; } }
+
+.destiny-section-title {
+  font-size: 10px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+@media (min-width: 640px) { .destiny-section-title { font-size: 11px; } }
+
+.destiny-lines { display: flex; flex-direction: column; gap: 6px; }
+
+.destiny-line {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--map-row-hover);
+  border: 1px solid transparent;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+  cursor: pointer;
+  animation: fadeUp 0.35s ease both;
+}
+.destiny-line:hover {
+  border-color: var(--line-color, var(--accent-lilac));
+  transform: translateX(3px);
+  background: var(--map-row-hover);
+}
+.destiny-line:nth-child(1) { animation-delay: 0.05s; }
+.destiny-line:nth-child(2) { animation-delay: 0.1s; }
+.destiny-line:nth-child(3) { animation-delay: 0.15s; }
+.destiny-line:nth-child(4) { animation-delay: 0.2s; }
+.destiny-line:nth-child(5) { animation-delay: 0.25s; }
+
+.destiny-line .dl-symbol {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  background: var(--line-color, var(--accent-lilac));
+  color: white;
+  box-shadow: 0 2px 8px var(--line-color, var(--accent-lilac));
+}
+.destiny-line .dl-info { flex: 1; min-width: 0; }
+.destiny-line .dl-head {
+  display: flex; align-items: baseline; gap: 6px;
+  flex-wrap: wrap;
+}
+.destiny-line .dl-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-primary);
+}
+.destiny-line .dl-type {
+  font-size: 10px; font-weight: 700;
+  color: var(--line-color, var(--accent-lilac));
+  text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--map-row-hover);
+}
+.destiny-line .dl-text {
+  font-size: 11px; color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.destiny-line .dl-dist {
+  flex-shrink: 0;
+  text-align: right;
+}
+.destiny-line .dl-dist-num {
+  font-size: 13px; font-weight: 700;
+  color: var(--line-color, var(--accent-lilac));
+  font-family: 'SF Mono', Menlo, monospace;
+}
+.destiny-line .dl-dist-lbl {
+  font-size: 9px; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+  margin-top: 1px;
+}
+
+/* Country marker (custom div icon on map) */
+.country-marker {
+  width: 28px; height: 28px;
+  position: relative;
+  pointer-events: none;
+}
+.country-marker .cm-pulse {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: var(--accent-lilac);
+  opacity: 0.4;
+  animation: cmPulse 2s ease-out infinite;
+}
+.country-marker .cm-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent-lilac);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(200,162,211,0.4), 0 4px 10px rgba(0,0,0,0.3);
+}
+@keyframes cmPulse {
+  0% { transform: scale(0.5); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Geocoding loader inside button */
+.form-btn.loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+.form-btn .btn-spinner {
+  display: none;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+.form-btn.loading .btn-spinner { display: inline-block; }
+
+/* ===== Info Block ===== */
+.info-block {
+  margin-top: 24px; padding: 20px; border-radius: var(--radius-xl);
+  animation: fadeUp 0.5s ease both 0.4s;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.info-block h2 {
+  font-size: 16px; font-weight: 600; margin-bottom: 10px;
+  color: var(--text-primary);
+}
+.info-block p {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 8px;
+}
+.info-block p:last-child { margin-bottom: 0; }
+.info-block .info-line-types {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 8px; margin-top: 12px;
+}
+.info-block .info-line {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--map-row-hover);
+  font-size: 12px;
+}
+.info-block .info-line strong {
+  font-weight: 600; color: var(--accent-lilac-dark);
+  font-size: 11px; letter-spacing: 0.04em;
+}
+[data-theme="dark"] .info-block .info-line strong { color: var(--accent-lilac); }
+.info-block .info-line span {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+@media (min-width: 640px) {
+  .info-block { padding: 24px; }
+  .info-block h2 { font-size: 18px; }
+  .info-block p { font-size: 14px; }
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding-top: 16px; margin-top: 16px;
+  border-top: 1px solid var(--footer-border);
+  color: var(--text-muted); font-size: 11px;
+  transition: border-color 0.3s, color 0.3s;
+}
+@media (min-width: 640px) { .footer { font-size: 12px; } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+.map-legend::-webkit-scrollbar { width: 4px; }
+
+/* ===== Dark Mode Enhancements ===== */
+[data-theme="dark"] .glass {
+  border-color: var(--glass-border);
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 4px 20px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .form-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 12px 40px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .map-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 12px 40px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .form-input {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .form-input:focus {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 0 0 3px var(--input-focus-shadow);
+}
+[data-theme="dark"] .form-btn {
+  box-shadow: 0 4px 16px var(--btn-shadow);
+}
+[data-theme="dark"] .form-btn:hover {
+  box-shadow: 0 8px 24px var(--btn-shadow-hover);
+}
+[data-theme="dark"] .header-icon {
+  box-shadow: 0 8px 24px rgba(160,124,200,0.25), 0 0 40px rgba(160,124,200,0.15);
+}
+[data-theme="dark"] .bg-ring div {
+  border-color: rgba(139,96,192,0.15);
+}
+[data-theme="dark"] .info-block {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.06), 0 4px 20px rgba(0,0,0,0.25);
+}
+[data-theme="dark"] .map-zoom,
+[data-theme="dark"] .map-legend,
+[data-theme="dark"] .map-click-tooltip,
+[data-theme="dark"] .destiny-card {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 4px 20px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .destiny-pin {
+  box-shadow: 0 4px 14px rgba(160,124,200,0.4);
+}
+[data-theme="dark"] .map-legend-toggle {
+  box-shadow: 0 0 0 1px rgba(155,130,200,0.08), 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* ===== Mobile optimizations ===== */
+@media (max-width: 640px) {
+  .container { padding: 20px 10px 40px; }
+  .top-bar { top: 10px; right: 10px; gap: 4px; }
+  .toggle-btn { padding: 8px 12px; font-size: 12px; gap: 4px; }
+  .toggle-btn svg { width: 14px; height: 14px; }
+  .header-icon { width: 44px; height: 44px; }
+  .header-icon svg { width: 22px; height: 22px; }
+  .header h1 { font-size: 24px; }
+  .header p { font-size: 13px; }
+
+  .form-card { padding: 14px; border-radius: 20px; }
+  .form-row { gap: 6px; }
+  .form-label { font-size: 9px; }
+  .form-input { padding: 10px 12px; font-size: 15px; }
+  .form-btn { padding: 11px 16px; font-size: 14px; }
+  .error-msg { font-size: 11px; }
+
+  .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; }
+  .map-zoom { top: 10px; left: 10px; }
+  .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
+  .map-zoom-btn svg { width: 16px; height: 16px; }
+  .map-legend-toggle { top: 10px; right: 10px; padding: 7px 12px; font-size: 11px; }
+  .map-legend { padding: 10px 12px 14px; }
+  .map-legend-toggle { display: inline-flex; }
+  .map-hint { font-size: 10px; padding: 7px 12px; bottom: 12px; max-width: 90%; white-space: normal; text-align: center; }
+
+  .destiny-card { padding: 16px; border-radius: 18px; }
+  .destiny-pin { width: 36px; height: 36px; font-size: 18px; }
+  .destiny-title { font-size: 16px; }
+  .destiny-coords { font-size: 10px; }
+  .destiny-summary { font-size: 12px; padding: 10px 12px; }
+  .destiny-line { padding: 8px 10px; gap: 8px; }
+  .destiny-line .dl-symbol { width: 28px; height: 28px; font-size: 14px; }
+  .destiny-line .dl-name { font-size: 12px; }
+  .destiny-line .dl-type { font-size: 9px; }
+  .destiny-line .dl-text { font-size: 10px; }
+  .destiny-line .dl-dist-num { font-size: 12px; }
+  .destiny-line .dl-dist-lbl { font-size: 8px; }
+
+  .map-click-tooltip { max-width: 220px; font-size: 11px; padding: 9px 12px; }
+  .map-click-tooltip .ct-name { font-size: 12px; }
+  .map-click-tooltip .ct-text { font-size: 10px; }
+  .map-click-tooltip .ct-dist { font-size: 9px; }
+
+  .info-block { padding: 16px; border-radius: 18px; }
+  .info-block h2 { font-size: 15px; }
+  .info-block p { font-size: 12px; }
+  .info-block .info-line-types { grid-template-columns: 1fr; gap: 6px; }
+  .info-block .info-line { padding: 7px 9px; }
+  .info-block .info-line strong { font-size: 10px; }
+  .info-block .info-line span { font-size: 10px; }
+
+  .footer { font-size: 10px; }
+  .leaflet-control-attribution { font-size: 9px !important; padding: 1px 5px !important; }
+}
+
+@media (max-width: 380px) {
+  .container { padding: 18px 8px 36px; }
+  .header h1 { font-size: 22px; }
+  .header p { font-size: 12px; padding: 0 4px; }
+  .form-card { padding: 12px; }
+  .form-label { font-size: 8px; letter-spacing: 0.04em; }
+  .form-input { padding: 9px 10px; font-size: 14px; }
+  .map-card { min-height: 340px; }
+  .destiny-line .dl-info { min-width: 0; }
+  .destiny-line .dl-head { gap: 4px; }
+  .destiny-line .dl-name { font-size: 11px; }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .map-zoom-btn { width: 40px; height: 40px; }
+  .map-legend-toggle { min-height: 36px; }
+  .form-btn { min-height: 44px; }
+  .toggle-btn { min-height: 40px; }
+  .legend-row { min-height: 36px; }
+  .destiny-line { min-height: 56px; }
+  /* Disable hover effects on touch */
+  .m-cell:hover, .form-card:hover, .map-card:hover, .destiny-card:hover, .destiny-line:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #particles-canvas { display: none; }
+  .bg-orbs span { animation: none !important; }
+  .bg-ring { animation: none !important; }
+  .leaflet-overlay-pane svg path.astro-line { animation: none !important; stroke-dashoffset: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background Layers -->
+<div class="bg-orbs">
+  <span class="o1"></span><span class="o2"></span><span class="o3"></span><span class="o4"></span>
+</div>
+<div class="bg-ring"><div></div></div>
+<div class="vignette-overlay"></div>
+<div class="grid-overlay"></div>
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <a class="toggle-btn glass" href="index.html" id="homeBtn" aria-label="Квадрат Пифагора" title="Квадрат Пифагора">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  </a>
+  <button class="toggle-btn glass" id="themeToggle" aria-label="Toggle theme">
+    <svg class="theme-icon" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+  <button class="toggle-btn glass" id="langToggle" aria-label="Switch language">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <span id="langLabel">EN</span>
+  </button>
+</div>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-icon-wrap">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+    </div>
+    <h1 id="title">Локационная астрология</h1>
+    <p id="subtitle">Интерактивная карта планетных линий по дате рождения</p>
+  </header>
+
+  <!-- Form -->
+  <div class="glass form-card">
+    <form id="birthForm" autocomplete="off">
+      <div class="form-row">
+        <label class="form-label" for="dateInput" id="dateLabel">Дата рождения</label>
+        <input type="text" id="dateInput" placeholder="ДД.ММ.ГГГГ" maxlength="10" inputmode="numeric" class="form-input">
+      </div>
+      <div class="form-row form-row-country">
+        <label class="form-label" for="countryInput" id="countryLabel">Страна</label>
+        <input type="text" id="countryInput" placeholder="Россия, Япония, США…" class="form-input">
+      </div>
+      <div class="form-row form-row-city">
+        <label class="form-label" for="cityInput" id="cityLabel">Город</label>
+        <input type="text" id="cityInput" placeholder="Москва, Токио, Нью-Йорк…" class="form-input">
+      </div>
+      <button type="submit" class="form-btn" id="calcBtn">Построить карту</button>
+      <div class="error-msg" id="errorMsg">Введите корректную дату в формате ДД.ММ.ГГГГ</div>
+      <div class="error-msg" id="geoErrorMsg">Страна или город не найдены</div>
+    </form>
+  </div>
+
+  <!-- Map -->
+  <div class="map-card glass" id="mapCard">
+    <div id="map"></div>
+
+    <!-- Custom zoom controls -->
+    <div class="map-zoom">
+      <button class="map-zoom-btn" id="zoomIn" aria-label="Zoom in" title="Приблизить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <button class="map-zoom-btn" id="zoomOut" aria-label="Zoom out" title="Отдалить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <button class="map-zoom-btn" id="zoomReset" aria-label="Reset view" title="Сбросить вид">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </button>
+    </div>
+
+    <!-- Legend toggle (mobile) -->
+    <button class="map-legend-toggle" id="legendToggle" aria-label="Toggle legend">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span id="legendToggleLabel">Планеты</span>
+    </button>
+
+    <!-- Legend -->
+    <div class="map-legend glass" id="mapLegend">
+      <div class="legend-drag-handle"></div>
+      <div class="legend-header">
+        <span class="legend-title" id="legendTitle">Планеты</span>
+        <button class="legend-action" id="legendToggleAll">Все</button>
+      </div>
+      <div class="legend-list" id="legendList"></div>
+      <div class="legend-types">
+        <div class="legend-type"><span class="type-dot mc"></span><span id="mcLabel">MC — Меридиан</span></div>
+        <div class="legend-type"><span class="type-dot ic"></span><span id="icLabel">IC — Антимеридиан</span></div>
+        <div class="legend-type"><span class="type-dot asc"></span><span id="ascLabel">ASC — Восход</span></div>
+        <div class="legend-type"><span class="type-dot ds"></span><span id="dsLabel">DS — Закат</span></div>
+      </div>
+    </div>
+
+    <!-- Map loader -->
+    <div class="map-loader" id="mapLoader">
+      <div class="loader-spinner"></div>
+      <span id="loaderText">Загрузка карты...</span>
+    </div>
+
+    <!-- Click tooltip -->
+    <div class="map-click-tooltip" id="clickTooltip"></div>
+
+    <!-- Hint -->
+    <div class="map-hint" id="mapHint">
+      <span id="hintText">Кликните на карту, чтобы увидеть влияние ближайших линий</span>
+    </div>
+  </div>
+
+  <!-- Destiny Card (shown when country is provided) -->
+  <div class="destiny-card glass" id="destinyCard" style="display:none">
+    <div class="destiny-head">
+      <div class="destiny-pin" id="destinyPin">🌍</div>
+      <div class="destiny-head-text">
+        <div class="destiny-eyebrow" id="destinyEyebrow">Судьба места</div>
+        <h2 class="destiny-title" id="destinyTitle">—</h2>
+        <div class="destiny-coords" id="destinyCoords">—</div>
+      </div>
+      <button class="destiny-close" id="destinyClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="destiny-summary" id="destinySummary">—</div>
+    <p class="destiny-section-title" id="destinyLinesTitle">Линии влияния</p>
+    <div class="destiny-lines" id="destinyLines"></div>
+  </div>
+
+  <!-- Info -->
+  <p class="section-label" id="infoLabel" style="margin-top: 28px;">О карте</p>
+  <div class="info-block glass">
+    <h2 id="infoTitle">Что такое локационная астрология?</h2>
+    <p id="infoText1">Локационная астрология (astrolocality) — направление астрологии, изучающее связь планет с географическими точками Земли. Для каждой планеты в момент рождения рассчитываются четыре ключевые линии, проецируемые на карту мира.</p>
+    <p id="infoText2">Места вдоль этих линий считаются точками особого влияния соответствующей планеты — они могут усиливать или проявлять качества планеты в жизни человека.</p>
+    <div class="info-line-types">
+      <div class="info-line"><strong>MC</strong><span id="infoMC">Зенит — самореализация, цели</span></div>
+      <div class="info-line"><strong>IC</strong><span id="infoIC">Надир — корни, дом, семья</span></div>
+      <div class="info-line"><strong>ASC</strong><span id="infoASC">Восход — внешность, первое впечатление</span></div>
+      <div class="info-line"><strong>DS</strong><span id="infoDS">Закат — отношения, партнёрство</span></div>
+    </div>
+    <p id="infoNote" style="margin-top: 12px; font-size: 11px; color: var(--text-muted); font-style: italic;">Расчёт выполняется для 12:00 UT, Гринвич. Линии носят ознакомительный характер.</p>
+  </div>
+
+  <footer class="footer" id="footer">Локационная астрология — интерактивная карта планетных линий</footer>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+'use strict';
+
+// ============================================================
+//  TRANSLATIONS
+// ============================================================
+const T = {
+  ru: {
+    title: 'Локационная астрология',
+    subtitle: 'Интерактивная карта планетных линий по дате рождения',
+    dateLabel: 'Дата рождения',
+    placeholder: 'ДД.ММ.ГГГГ',
+    countryLabel: 'Страна',
+    countryPlaceholder: 'Россия, Япония, США…',
+    cityLabel: 'Город',
+    cityPlaceholder: 'Москва, Токио, Нью-Йорк…',
+    calcBtn: 'Построить карту',
+    calcBtnLoading: 'Поиск…',
+    error: 'Введите корректную дату в формате ДД.ММ.ГГГГ',
+    geoError: 'Страна или город не найдены',
+    legendTitle: 'Планеты',
+    legendAllOn: 'Все',
+    legendAllOff: 'Скрыть',
+    mcLabel: 'MC — Меридиан',
+    icLabel: 'IC — Антимеридиан',
+    ascLabel: 'ASC — Восход',
+    dsLabel: 'DS — Закат',
+    infoLabel: 'О карте',
+    infoTitle: 'Что такое локационная астрология?',
+    infoText1: 'Локационная астрология (astrolocality) — направление астрологии, изучающее связь планет с географическими точками Земли. Для каждой планеты в момент рождения рассчитываются четыре ключевые линии, проецируемые на карту мира.',
+    infoText2: 'Места вдоль этих линий считаются точками особого влияния соответствующей планеты — они могут усиливать или проявлять качества планеты в жизни человека.',
+    infoMC: 'Зенит — самореализация, цели',
+    infoIC: 'Надир — корни, дом, семья',
+    infoASC: 'Восход — внешность, первое впечатление',
+    infoDS: 'Закат — отношения, партнёрство',
+    infoNote: 'Расчёт выполняется для 12:00 UT, Гринвич. Линии носят ознакомительный характер.',
+    footer: 'Локационная астрология — интерактивная карта планетных линий',
+    loaderText: 'Загрузка карты...',
+    legendToggleLabel: 'Планеты',
+    hintText: 'Кликните на карту, чтобы увидеть влияние ближайших линий',
+    homeTitle: 'Квадрат Пифагора',
+    destinyEyebrow: 'Судьба места',
+    destinyLinesTitle: 'Линии влияния',
+    destinyNoInfluence: 'Это место не пересекает ни одна активная планетная линия в радиусе 15° — здесь вы свободны от сильного планетарного влияния и можете формировать свою судьбу самостоятельно.',
+    destinySummary: (top, count) => `В точке ${top.planet} на линии ${top.line} (${top.dist.toFixed(1)}°). Найдено ${count} активных планетных линий в радиусе 15°.`,
+    copied: 'Скопировано!',
+    planets: {
+      sun: 'Солнце', moon: 'Луна', mercury: 'Меркурий', venus: 'Венера',
+      mars: 'Марс', jupiter: 'Юпитер', saturn: 'Сатурн', uranus: 'Уран',
+      neptune: 'Нептун', pluto: 'Плутон', node: 'Сев. Узел'
+    },
+    interpretations: {
+      sun: { mc: 'Сильная самореализация, признание, лидерство', ic: 'Глубокая связь с корнями, внутренняя сила', asc: 'Яркая индивидуальность, заметность', ds: 'Гармоничные отношения, взаимное уважение' },
+      moon: { mc: 'Эмоциональная реализация, публичность', ic: 'Семейные связи, потребность в уюте', asc: 'Эмоциональная открытость, интуиция', ds: 'Глубокие эмпатичные отношения' },
+      mercury: { mc: 'Интеллектуальные достижения, коммуникация', ic: 'Внутренний диалог, рефлексия', asc: 'Острый ум, быстрая реакция', ds: 'Умные собеседники, обмен идеями' },
+      venus: { mc: 'Творчество, искусство, красота', ic: 'Гармония в доме, уют', asc: 'Обаяние, привлекательность', ds: 'Любовь, романтика, партнёрство' },
+      mars: { mc: 'Амбиции, энергия действия', ic: 'Внутренний огонь, защита близких', asc: 'Активность, спортивность', ds: 'Страстные отношения, динамика' },
+      jupiter: { mc: 'Успех, расширение, удача', ic: 'Щедрость, мудрость предков', asc: 'Оптимизм, везение', ds: 'Партнёры-учителя, рост через других' },
+      saturn: { mc: 'Долгосрочные достижения, дисциплина', ic: 'Структура, ответственность', asc: 'Серьёзность, авторитет', ds: 'Стабильные, долгие отношения' },
+      uranus: { mc: 'Инновации, прорывы, оригинальность', ic: 'Независимость, необычное детство', asc: 'Свобода, эксцентричность', ds: 'Необычные партнёрства' },
+      neptune: { mc: 'Духовность, творчество, иллюзии', ic: 'Глубинная интуиция, мистика', asc: 'Мечтательность, художественность', ds: 'Идеалистичные отношения' },
+      pluto: { mc: 'Трансформация, власть, глубина', ic: 'Скрытые силы, возрождение', asc: 'Магнетизм, интенсивность', ds: 'Глубокие, преобразующие отношения' },
+      node: { mc: 'Кармическое направление, жизненная цель', ic: 'Прошлые связи, наследие', asc: 'Путь развития личности', ds: 'Кармические встречи' }
+    },
+    influenceLevels: [
+      { max: 2, label: 'Очень сильное' },
+      { max: 5, label: 'Сильное' },
+      { max: 10, label: 'Умеренное' },
+      { max: 180, label: 'Слабое' }
+    ],
+    destinySummary: (top, count) => `Точка находится под сильнейшим влиянием ${top.planet} на линии ${top.line} (${top.dist.toFixed(1)}°). Всего обнаружено ${count} активных планетных линий в радиусе 15°.`,
+    destinyInfluenceText: (planet, line) => `Сильное влияние ${planet} на ${line} — это место благоприятствует раскрытию соответствующих качеств планеты.`
+  },
+  en: {
+    title: 'Locational Astrology',
+    subtitle: 'Interactive planetary lines map by birth date',
+    dateLabel: 'Date of birth',
+    placeholder: 'DD.MM.YYYY',
+    countryLabel: 'Country',
+    countryPlaceholder: 'Russia, Japan, USA…',
+    cityLabel: 'City',
+    cityPlaceholder: 'Moscow, Tokyo, New York…',
+    calcBtn: 'Build map',
+    calcBtnLoading: 'Searching…',
+    error: 'Please enter a valid date in DD.MM.YYYY format',
+    geoError: 'Country or city not found',
+    legendTitle: 'Planets',
+    legendAllOn: 'All',
+    legendAllOff: 'Hide',
+    mcLabel: 'MC — Meridian',
+    icLabel: 'IC — Anti-meridian',
+    ascLabel: 'ASC — Rising',
+    dsLabel: 'DS — Setting',
+    infoLabel: 'About the map',
+    infoTitle: 'What is locational astrology?',
+    infoText1: 'Locational astrology (astrolocality) is a branch of astrology that studies the connection between planets and geographic points on Earth. For each planet at the moment of birth, four key lines are calculated and projected onto the world map.',
+    infoText2: 'Places along these lines are considered points of special influence of the corresponding planet — they can amplify or manifest the planet\'s qualities in a person\'s life.',
+    infoMC: 'Zenith — self-realization, goals',
+    infoIC: 'Nadir — roots, home, family',
+    infoASC: 'Ascendant — appearance, first impression',
+    infoDS: 'Descendant — relationships, partnership',
+    infoNote: 'Calculation is performed for 12:00 UT, Greenwich. Lines are for reference only.',
+    footer: 'Locational astrology — interactive planetary lines map',
+    loaderText: 'Loading map...',
+    legendToggleLabel: 'Planets',
+    hintText: 'Click on the map to see the influence of nearby lines',
+    homeTitle: 'Pythagorean Square',
+    destinyEyebrow: 'Place destiny',
+    destinyLinesTitle: 'Influence lines',
+    destinyNoInfluence: 'This point is not crossed by any active planetary line within 15° — here you are free from strong planetary influence and can shape your destiny yourself.',
+    destinySummary: (top, count) => `At this point, ${top.planet} on the ${top.line} line (${top.dist.toFixed(1)}°). Found ${count} active planetary lines within 15°.`,
+    copied: 'Copied!',
+    planets: {
+      sun: 'Sun', moon: 'Moon', mercury: 'Mercury', venus: 'Venus',
+      mars: 'Mars', jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus',
+      neptune: 'Neptune', pluto: 'Pluto', node: 'N. Node'
+    },
+    interpretations: {
+      sun: { mc: 'Strong self-realization, recognition, leadership', ic: 'Deep connection to roots, inner strength', asc: 'Bright individuality, visibility', ds: 'Harmonious relationships, mutual respect' },
+      moon: { mc: 'Emotional fulfillment, publicity', ic: 'Family bonds, need for comfort', asc: 'Emotional openness, intuition', ds: 'Deep empathic relationships' },
+      mercury: { mc: 'Intellectual achievements, communication', ic: 'Inner dialogue, reflection', asc: 'Sharp mind, quick reaction', ds: 'Smart partners, idea exchange' },
+      venus: { mc: 'Creativity, art, beauty', ic: 'Harmony at home, coziness', asc: 'Charm, attractiveness', ds: 'Love, romance, partnership' },
+      mars: { mc: 'Ambitions, action energy', ic: 'Inner fire, protecting loved ones', asc: 'Activity, athleticism', ds: 'Passionate relationships, dynamics' },
+      jupiter: { mc: 'Success, expansion, luck', ic: 'Generosity, ancestral wisdom', asc: 'Optimism, fortune', ds: 'Partners as teachers, growth through others' },
+      saturn: { mc: 'Long-term achievements, discipline', ic: 'Structure, responsibility', asc: 'Seriousness, authority', ds: 'Stable, lasting relationships' },
+      uranus: { mc: 'Innovation, breakthroughs, originality', ic: 'Independence, unusual childhood', asc: 'Freedom, eccentricity', ds: 'Unusual partnerships' },
+      neptune: { mc: 'Spirituality, creativity, illusions', ic: 'Deep intuition, mysticism', asc: 'Dreaminess, artistry', ds: 'Idealistic relationships' },
+      pluto: { mc: 'Transformation, power, depth', ic: 'Hidden forces, rebirth', asc: 'Magnetism, intensity', ds: 'Deep, transformative relationships' },
+      node: { mc: 'Karmic direction, life purpose', ic: 'Past connections, legacy', asc: 'Path of personal development', ds: 'Karmic encounters' }
+    },
+    influenceLevels: [
+      { max: 2, label: 'Very strong' },
+      { max: 5, label: 'Strong' },
+      { max: 10, label: 'Moderate' },
+      { max: 180, label: 'Weak' }
+    ],
+    destinySummary: (top, count) => `The point is under the strongest influence of ${top.planet} on the ${top.line} line (${top.dist.toFixed(1)}°). Found ${count} active planetary lines within 15°.`,
+    destinyInfluenceText: (planet, line) => `Strong ${planet} influence on ${line} — this place favors the manifestation of the corresponding planetary qualities.`
+  }
+};
+
+let lang = 'ru';
+let currentTheme = localStorage.getItem('map-theme') || 'light';
+
+// ============================================================
+//  PLANET DATA (mean elements at J2000.0, simplified)
+// ============================================================
+const PLANETS = [
+  { id: 'sun',     L0: 280.46, period: 365.25,   color: '#C8A2D3', symbol: '☉' },
+  { id: 'moon',    L0: 218.32, period: 27.32,    color: '#F2C6CC', symbol: '☽' },
+  { id: 'mercury', L0: 252.25, period: 87.97,    color: '#9B8EC4', symbol: '☿' },
+  { id: 'venus',   L0: 181.98, period: 224.7,    color: '#B8D4E3', symbol: '♀' },
+  { id: 'mars',    L0: 355.43, period: 686.97,   color: '#D4A5A5', symbol: '♂' },
+  { id: 'jupiter', L0: 34.40,  period: 4332.59,  color: '#E8C170', symbol: '♃' },
+  { id: 'saturn',  L0: 49.94,  period: 10759,    color: '#A8B89C', symbol: '♄' },
+  { id: 'uranus',  L0: 314.06, period: 30688.5,  color: '#7FB8C9', symbol: '♅' },
+  { id: 'neptune', L0: 304.35, period: 60182,    color: '#5A7FB8', symbol: '♆' },
+  { id: 'pluto',   L0: 238.93, period: 90560,    color: '#8B7AA0', symbol: '♇' },
+  { id: 'node',    L0: 125.04, period: 6793,     color: '#9CA8C4', symbol: '☊', retrograde: true }
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let map = null;
+let tileLayer = null;
+let planetGroups = {};    // { planetId: L.featureGroup }
+let visiblePlanets = {}; // { planetId: bool }
+let lastClickLatLng = null;
+let isAnimating = false;
+let isMobile = window.innerWidth < 768;
+
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
+const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png';
+const ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
+
+// ============================================================
+//  ASTRO CALCULATIONS (simplified mean-motion model)
+// ============================================================
+const J2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+
+function getPlanetPosition(planet, daysSinceJ2000) {
+  const L = (planet.L0 + (360 / planet.period) * daysSinceJ2000) % 360;
+  const Lrad = L * Math.PI / 180;
+  const eps = 23.44 * Math.PI / 180;
+  const sinDec = Math.sin(eps) * Math.sin(Lrad);
+  const Dec = Math.asin(Math.max(-1, Math.min(1, sinDec)));
+  const RA = Math.atan2(Math.cos(eps) * Math.sin(Lrad), Math.cos(Lrad));
+  return {
+    L: (L + 360) % 360,
+    RA: ((RA * 180 / Math.PI) + 360) % 360,
+    Dec: Dec * 180 / Math.PI
+  };
+}
+
+function getGMST(daysSinceJ2000) {
+  // Greenwich Mean Sidereal Time (degrees)
+  return ((100.46 + 360.985647 * daysSinceJ2000) % 360 + 360) % 360;
+}
+
+function getPlanetLines(planet, birthDate) {
+  // Use noon UT, Greenwich as reference
+  const d = new Date(birthDate);
+  const noon = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
+  const days = (noon - J2000) / 86400000;
+
+  const pos = getPlanetPosition(planet, days);
+  const gmst = getGMST(days);
+
+  // Longitude where planet is at MC
+  let L_MC = ((pos.RA - gmst) % 360 + 540) % 360 - 180; // normalize to [-180, 180]
+
+  return { L_MC, Dec: pos.Dec, RA: pos.RA, L: pos.L };
+}
+
+// ============================================================
+//  LINE GENERATION (great-circle math)
+// ============================================================
+function normalizeLng(lng) {
+  let n = lng;
+  while (n > 180) n -= 360;
+  while (n < -180) n += 360;
+  return n;
+}
+
+function generateMeridian(lng, steps) {
+  const points = [];
+  for (let i = 0; i <= steps; i++) {
+    const lat = -88 + (176 * i / steps);
+    points.push([lat, normalizeLng(lng)]);
+  }
+  return points;
+}
+
+function generateGreatCircle(L_MC, Dec, type, steps) {
+  const points = [];
+  const Lrad = L_MC * Math.PI / 180;
+  const Drad = Dec * Math.PI / 180;
+  const sinD = Math.sin(Drad);
+  const cosD = Math.cos(Drad);
+  const sinL = Math.sin(Lrad);
+  const cosL = Math.cos(Lrad);
+
+  for (let i = 0; i <= steps; i++) {
+    const t = (2 * Math.PI * i / steps) - Math.PI / 2;
+    const ct = Math.cos(t), st = Math.sin(t);
+    let x, y, z;
+    if (type === 'ASC') {
+      x = -ct * sinL - st * cosD * cosL;
+      y =  ct * cosL - st * cosD * sinL;
+      z = -st * sinD;
+    } else { // DS
+      x =  ct * sinL + st * cosD * cosL;
+      y = -ct * cosL + st * cosD * sinL;
+      z =  st * sinD;
+    }
+    const lat = Math.asin(Math.max(-1, Math.min(1, z))) * 180 / Math.PI;
+    const lng = normalizeLng(Math.atan2(y, x) * 180 / Math.PI);
+    points.push([lat, lng]);
+  }
+  return points;
+}
+
+// ============================================================
+//  SPHERICAL DISTANCE HELPERS
+// ============================================================
+function latLngToVec3(lat, lng) {
+  const latR = lat * Math.PI / 180;
+  const lngR = lng * Math.PI / 180;
+  return {
+    x: Math.cos(latR) * Math.cos(lngR),
+    y: Math.cos(latR) * Math.sin(lngR),
+    z: Math.sin(latR)
+  };
+}
+
+function dot(a, b) { return a.x*b.x + a.y*b.y + a.z*b.z; }
+function cross(a, b) {
+  return {
+    x: a.y*b.z - a.z*b.y,
+    y: a.z*b.x - a.x*b.z,
+    z: a.x*b.y - a.y*b.x
+  };
+}
+function norm(a) { return Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z); }
+
+function pointToSegmentDistance(p3, a3, b3) {
+  // Angular distance from p3 to closest point on great-circle segment a3-b3
+  const n = cross(a3, b3);
+  const nLen = norm(n);
+  if (nLen < 1e-10) return Math.PI; // a == b
+  const nx = n.x/nLen, ny = n.y/nLen, nz = n.z/nLen;
+  const d = p3.x*nx + p3.y*ny + p3.z*nz;
+  const px = p3.x - d*nx, py = p3.y - d*ny, pz = p3.z - d*nz;
+  const pLen = Math.sqrt(px*px + py*py + pz*pz);
+  if (pLen < 1e-10) return 0;
+  const cx = px/pLen, cy = py/pLen, cz = pz/pLen;
+  const cosA = Math.max(-1, Math.min(1, dot(p3, {x:cx, y:cy, z:cz})));
+  return Math.acos(cosA) * 180 / Math.PI; // degrees
+}
+
+// ============================================================
+//  MAP INITIALIZATION
+// ============================================================
+function initMap() {
+  try {
+    map = L.map('map', {
+      center: [25, 10],
+      zoom: 2,
+      minZoom: 2,
+      maxZoom: 6,
+      worldCopyJump: true,
+      zoomControl: false,
+      attributionControl: true,
+      fadeAnimation: true,
+      zoomAnimation: true
+    });
+
+    updateTiles();
+
+    L.control.attribution({
+      position: 'bottomright',
+      prefix: ''
+    }).addTo(map);
+
+    // Custom zoom controls
+    document.getElementById('zoomIn').addEventListener('click', () => map.zoomIn());
+    document.getElementById('zoomOut').addEventListener('click', () => map.zoomOut());
+    document.getElementById('zoomReset').addEventListener('click', () => {
+      map.flyTo([25, 10], 2, { duration: 0.8 });
+    });
+
+    // Force Leaflet to recalculate container size (fixes mobile rendering)
+    setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+    setTimeout(() => { if (map) map.invalidateSize(); }, 600);
+
+    // Hide loader when map is ready
+    let loaderHidden = false;
+    const hideLoader = () => {
+      if (loaderHidden) return;
+      loaderHidden = true;
+      const el = document.getElementById('mapLoader');
+      if (el) el.classList.add('hidden');
+    };
+    map.whenReady(() => {
+      setTimeout(hideLoader, 400);
+    });
+
+    // Safety fallback: always hide loader after 4s no matter what
+    setTimeout(hideLoader, 4000);
+
+    // Also hide on first tiles loaded
+    if (tileLayer) {
+      tileLayer.on('load', () => setTimeout(hideLoader, 200));
+    }
+
+    // Map click → find nearest line
+    map.on('click', e => {
+      if (isAnimating) return;
+      onMapClick(e.latlng);
+    });
+
+    // Close tooltip on map move
+    map.on('movestart', () => {
+      hideClickTooltip();
+    });
+  } catch (err) {
+    // If Leaflet fails to initialize, show error and still hide loader
+    console.error('Map init error:', err);
+    const loader = document.getElementById('mapLoader');
+    if (loader) {
+      loader.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">⚠️ Не удалось загрузить карту.<br>Проверьте подключение к интернету и обновите страницу.</div>';
+      setTimeout(() => loader.classList.add('hidden'), 3000);
+    }
+  }
+}
+
+function updateTiles() {
+  if (tileLayer) {
+    map.removeLayer(tileLayer);
+  }
+  const url = currentTheme === 'dark' ? TILE_DARK : TILE_LIGHT;
+  tileLayer = L.tileLayer(url, {
+    subdomains: 'abcd',
+    maxZoom: 19,
+    attribution: ATTRIBUTION,
+    className: 'map-tiles'
+  }).addTo(map);
+  tileLayer.bringToBack();
+}
+
+// ============================================================
+//  THEME
+// ============================================================
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  currentTheme = theme;
+  localStorage.setItem('map-theme', theme);
+  updateThemeIcon();
+  if (typeof updateParticleColors === 'function') updateParticleColors();
+  if (map) updateTiles();
+}
+
+function updateThemeIcon() {
+  const icon = document.getElementById('themeIcon');
+  if (currentTheme === 'dark') {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  } else {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+}
+
+// ============================================================
+//  LEGEND
+// ============================================================
+function renderLegend() {
+  const t = T[lang];
+  const list = document.getElementById('legendList');
+  list.innerHTML = PLANETS.map((p, idx) => `
+    <div class="legend-row" data-planet="${p.id}" style="--planet-color: ${p.color}">
+      <span class="planet-dot"></span>
+      <span class="planet-symbol">${p.symbol}</span>
+      <span class="planet-name">${t.planets[p.id]}</span>
+      <span class="planet-check ${visiblePlanets[p.id] ? 'checked' : ''}"></span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.legend-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const pid = row.dataset.planet;
+      togglePlanet(pid);
+    });
+  });
+}
+
+function updateLegendUI() {
+  const t = T[lang];
+  document.querySelectorAll('.legend-row').forEach(row => {
+    const pid = row.dataset.planet;
+    const check = row.querySelector('.planet-check');
+    const on = visiblePlanets[pid];
+    check.classList.toggle('checked', on);
+    row.classList.toggle('disabled', !on);
+  });
+  const allOn = PLANETS.every(p => visiblePlanets[p.id]);
+  const anyOn = PLANETS.some(p => visiblePlanets[p.id]);
+  const btn = document.getElementById('legendToggleAll');
+  btn.textContent = allOn ? t.legendAllOff : t.legendAllOn;
+}
+
+function togglePlanet(pid) {
+  visiblePlanets[pid] = !visiblePlanets[pid];
+  if (planetGroups[pid]) {
+    if (visiblePlanets[pid]) {
+      planetGroups[pid].addTo(map);
+      // Re-trigger animation
+      setTimeout(() => animateGroup(planetGroups[pid]), 50);
+    } else {
+      map.removeLayer(planetGroups[pid]);
+    }
+  }
+  updateLegendUI();
+  hideClickTooltip();
+}
+
+function toggleAllPlanets() {
+  const allOn = PLANETS.every(p => visiblePlanets[p.id]);
+  const newState = !allOn;
+  PLANETS.forEach(p => {
+    visiblePlanets[p.id] = newState;
+    if (planetGroups[p.id]) {
+      if (newState) {
+        planetGroups[p.id].addTo(map);
+        setTimeout(() => animateGroup(planetGroups[p.id]), 50);
+      } else {
+        map.removeLayer(planetGroups[p.id]);
+      }
+    }
+  });
+  updateLegendUI();
+  hideClickTooltip();
+}
+
+function animateGroup(group) {
+  // Re-apply className to re-trigger CSS animation
+  group.eachLayer(layer => {
+    const el = layer.getElement();
+    if (el && el.tagName === 'path') {
+      const cls = el.getAttribute('class') || '';
+      el.setAttribute('class', '');
+      // Force reflow
+      void el.getBoundingClientRect();
+      el.setAttribute('class', cls);
+    }
+  });
+}
+
+// ============================================================
+//  BUILD MAP (compute & draw lines)
+// ============================================================
+function buildMap(birthDate) {
+  isAnimating = true;
+  hideClickTooltip();
+
+  // Remove existing groups
+  for (const pid in planetGroups) {
+    map.removeLayer(planetGroups[pid]);
+    planetGroups[pid] = null;
+  }
+
+  PLANETS.forEach((planet, pIdx) => {
+    if (!visiblePlanets[planet.id]) return;
+
+    const lines = getPlanetLines(planet, birthDate);
+    const group = L.featureGroup().addTo(map);
+
+    const lineConfigs = [
+      { type: 'MC',  points: generateMeridian(lines.L_MC, 80) },
+      { type: 'IC',  points: generateMeridian(lines.L_MC + 180, 80) },
+      { type: 'ASC', points: generateGreatCircle(lines.L_MC, lines.Dec, 'ASC', 140) },
+      { type: 'DS',  points: generateGreatCircle(lines.L_MC, lines.Dec, 'DS',  140) }
+    ];
+
+    lineConfigs.forEach(cfg => {
+      const polyline = L.polyline(cfg.points, {
+        color: planet.color,
+        weight: 2,
+        opacity: 0.55,
+        smoothFactor: 1.5,
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'astro-line planet-' + pIdx + ' line-' + cfg.type.toLowerCase(),
+        interactive: true
+      });
+
+      polyline.metadata = {
+        planetId: planet.id,
+        lineType: cfg.type,
+        points: cfg.points
+      };
+
+      polyline.on('mouseover', e => {
+        const layer = e.target;
+        layer.setStyle({ weight: 3.5, opacity: 1 });
+        const tip = document.getElementById('clickTooltip');
+        showLineTooltip(tip, layer.metadata, e.originalEvent);
+      });
+
+      polyline.on('mousemove', e => {
+        const tip = document.getElementById('clickTooltip');
+        if (tip.classList.contains('show')) {
+          positionClickTooltip(tip, e.originalEvent);
+        }
+      });
+
+      polyline.on('mouseout', e => {
+        e.target.setStyle({ weight: 2, opacity: 0.55 });
+        hideClickTooltip();
+      });
+
+      polyline.addTo(group);
+    });
+
+    planetGroups[planet.id] = group;
+  });
+
+  // Hide hint after first build
+  const hint = document.getElementById('mapHint');
+  if (hint) hint.style.display = 'none';
+
+  setTimeout(() => { isAnimating = false; }, 2000);
+}
+
+// ============================================================
+// ============================================================
+//  GEOCODING (Nominatim)
+// ============================================================
+let countryMarker = null;
+let currentLocation = null; // { lat, lng, name }
+
+async function geocode(query) {
+  if (!query || !query.trim()) return null;
+  const langParam = lang === 'ru' ? 'ru' : 'en';
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=${langParam}&q=${encodeURIComponent(query.trim())}`;
+  try {
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || data.length === 0) return null;
+    const r = data[0];
+    return {
+      lat: parseFloat(r.lat),
+      lng: parseFloat(r.lon),
+      name: r.display_name.split(',').slice(0, 2).join(', ')
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+function placeCountryMarker(latlng, label) {
+  if (countryMarker) {
+    map.removeLayer(countryMarker);
+    countryMarker = null;
+  }
+  const icon = L.divIcon({
+    className: 'country-marker',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    html: '<div class="cm-pulse"></div><div class="cm-dot"></div>'
+  });
+  countryMarker = L.marker(latlng, { icon, interactive: false }).addTo(map);
+  countryMarker.bindTooltip(label, {
+    className: 'country-tooltip',
+    direction: 'top',
+    offset: [0, -10]
+  });
+}
+
+// ============================================================
+//  DESTINY ANALYSIS
+// ============================================================
+function findLinesNear(latlng, thresholdDeg) {
+  const clickVec = latLngToVec3(latlng.lat, latlng.lng);
+  const candidates = [];
+  for (const pid in planetGroups) {
+    if (!visiblePlanets[pid]) continue;
+    const group = planetGroups[pid];
+    if (!map.hasLayer(group)) continue;
+    group.eachLayer(layer => {
+      const pts = layer.metadata.points;
+      let minDist = Infinity;
+      const step = Math.max(1, Math.floor(pts.length / 50));
+      for (let i = 0; i < pts.length - 1; i += step) {
+        const a = latLngToVec3(pts[i][0], pts[i][1]);
+        const b = latLngToVec3(pts[i+1][0], pts[i+1][1]);
+        const d = pointToSegmentDistance(clickVec, a, b);
+        if (d < minDist) minDist = d;
+      }
+      if (minDist < thresholdDeg) {
+        candidates.push({
+          planetId: layer.metadata.planetId,
+          lineType: layer.metadata.lineType,
+          dist: minDist
+        });
+      }
+    });
+  }
+  candidates.sort((a, b) => a.dist - b.dist);
+  return candidates;
+}
+
+function renderDestiny(location, candidates) {
+  const t = T[lang];
+  const card = document.getElementById('destinyCard');
+  document.getElementById('destinyTitle').textContent = location.name;
+  const latDir = location.lat >= 0 ? 'N' : 'S';
+  const lngDir = location.lng >= 0 ? 'E' : 'W';
+  document.getElementById('destinyCoords').textContent =
+    `${Math.abs(location.lat).toFixed(2)}°${latDir}, ${Math.abs(location.lng).toFixed(2)}°${lngDir}`;
+
+  const summaryEl = document.getElementById('destinySummary');
+  const linesEl = document.getElementById('destinyLines');
+
+  if (candidates.length === 0) {
+    summaryEl.textContent = t.destinyNoInfluence;
+    linesEl.innerHTML = '';
+    card.style.display = 'block';
+    return;
+  }
+
+  const top = candidates[0];
+  const topPlanet = PLANETS.find(p => p.id === top.planetId);
+  const summaryText = t.destinySummary(
+    { planet: t.planets[topPlanet.id], line: top.lineType, dist: top.dist },
+    candidates.length
+  );
+  summaryEl.textContent = summaryText;
+
+  linesEl.innerHTML = candidates.slice(0, 5).map((c, idx) => {
+    const p = PLANETS.find(x => x.id === c.planetId);
+    const interp = (t.interpretations[p.id] && t.interpretations[p.id][c.lineType.toLowerCase()]) || '';
+    const level = (t.influenceLevels || []).find(l => c.dist <= l.max);
+    const levelLabel = level ? level.label : '';
+    return `
+      <div class="destiny-line" style="--line-color: ${p.color}; animation-delay: ${0.05 + idx * 0.05}s" data-planet="${p.id}" data-line="${c.lineType}">
+        <div class="dl-symbol">${p.symbol}</div>
+        <div class="dl-info">
+          <div class="dl-head">
+            <span class="dl-name">${t.planets[p.id]}</span>
+            <span class="dl-type">${c.lineType}</span>
+          </div>
+          <div class="dl-text">${interp}</div>
+        </div>
+        <div class="dl-dist">
+          <div class="dl-dist-num">${c.dist.toFixed(1)}°</div>
+          <div class="dl-dist-lbl">${levelLabel}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Click on destiny line → focus on that planet
+  linesEl.querySelectorAll('.destiny-line').forEach(el => {
+    el.addEventListener('click', () => {
+      const pid = el.dataset.planet;
+      // Ensure the planet is visible
+      if (!visiblePlanets[pid]) {
+        togglePlanet(pid);
+      }
+      // Open the line's tooltip on the country marker
+      const planet = PLANETS.find(p => p.id === pid);
+      const tipEl = document.getElementById('clickTooltip');
+      showDestinyLineTooltip(tipEl, planet, el.dataset.line);
+      positionClickTooltipOnMap(tipEl, currentLocation);
+    });
+  });
+
+  card.style.display = 'block';
+}
+
+function showDestinyLineTooltip(tipEl, planet, lineType) {
+  const t = T[lang];
+  const interp = (t.interpretations[planet.id] && t.interpretations[planet.id][lineType.toLowerCase()]) || '';
+  tipEl.style.setProperty('--tooltip-color', planet.color);
+  tipEl.innerHTML = `
+    <button class="ct-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ct-head">
+      <span class="ct-symbol" style="color:${planet.color}">${planet.symbol}</span>
+      <span class="ct-name">${t.planets[planet.id]}</span>
+      <span class="ct-type" style="color:${planet.color}">${lineType}</span>
+    </div>
+    <div class="ct-text">${interp}</div>
+  `;
+  tipEl.classList.add('show');
+  const closeBtn = tipEl.querySelector('.ct-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      hideClickTooltip();
+    });
+  }
+}
+
+function positionClickTooltipOnMap(tipEl, latlng) {
+  if (!latlng) return;
+  const mapEl = document.getElementById('map');
+  const rect = mapEl.getBoundingClientRect();
+  const point = map.latLngToContainerPoint(latlng);
+  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  positionClickTooltip(tipEl, fakeEvt);
+}
+
+function clearDestiny() {
+  document.getElementById('destinyCard').style.display = 'none';
+  if (countryMarker) {
+    map.removeLayer(countryMarker);
+    countryMarker = null;
+  }
+  currentLocation = null;
+  hideClickTooltip();
+}
+
+// ============================================================
+//  CLICK HANDLER
+// ============================================================
+function onMapClick(latlng) {
+  const clickVec = latLngToVec3(latlng.lat, latlng.lng);
+  const threshold = 15; // degrees
+  const candidates = [];
+
+  for (const pid in planetGroups) {
+    if (!visiblePlanets[pid]) continue;
+    const group = planetGroups[pid];
+    if (!map.hasLayer(group)) continue;
+
+    group.eachLayer(layer => {
+      const pts = layer.metadata.points;
+      let minDist = Infinity;
+      // Sample points for performance
+      const step = Math.max(1, Math.floor(pts.length / 40));
+      for (let i = 0; i < pts.length - 1; i += step) {
+        const a = latLngToVec3(pts[i][0], pts[i][1]);
+        const b = latLngToVec3(pts[i+1][0], pts[i+1][1]);
+        const d = pointToSegmentDistance(clickVec, a, b);
+        if (d < minDist) minDist = d;
+      }
+      if (minDist < threshold) {
+        candidates.push({
+          planetId: layer.metadata.planetId,
+          lineType: layer.metadata.lineType,
+          dist: minDist
+        });
+      }
+    });
+  }
+
+  if (candidates.length === 0) {
+    showClickTooltipNoInfluence(latlng);
+    return;
+  }
+
+  candidates.sort((a, b) => a.dist - b.dist);
+  showClickTooltipMulti(candidates, latlng);
+}
+
+function showLineTooltip(tipEl, meta, evt) {
+  const t = T[lang];
+  const planet = PLANETS.find(p => p.id === meta.planetId);
+  const interp = t.interpretations[meta.planetId]?.[meta.lineType.toLowerCase()] || '';
+  tipEl.style.setProperty('--tooltip-color', planet.color);
+  tipEl.innerHTML = `
+    <button class="ct-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ct-head">
+      <span class="ct-symbol" style="color:${planet.color}">${planet.symbol}</span>
+      <span class="ct-name">${t.planets[planet.id]}</span>
+      <span class="ct-type" style="color:${planet.color}">${meta.lineType}</span>
+    </div>
+    <div class="ct-text">${interp}</div>
+  `;
+  tipEl.classList.add('show');
+  positionClickTooltip(tipEl, evt);
+
+  const closeBtn = tipEl.querySelector('.ct-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      hideClickTooltip();
+    });
+  }
+}
+
+function showClickTooltipMulti(candidates, latlng) {
+  const tipEl = document.getElementById('clickTooltip');
+  const t = T[lang];
+  const top = candidates[0];
+  const planet = PLANETS.find(p => p.id === top.planetId);
+  const interp = t.interpretations[top.planetId]?.[top.lineType.toLowerCase()] || '';
+  const influenceLevel = t.influenceLevels.find(l => top.dist <= l.max) || t.influenceLevels[t.influenceLevels.length - 1];
+
+  tipEl.style.setProperty('--tooltip-color', planet.color);
+  let othersHtml = '';
+  if (candidates.length > 1) {
+    othersHtml = '<div class="ct-dist" style="margin-top:8px;padding-top:6px;border-top:1px solid var(--map-divider)"><b>Другие линии поблизости:</b><br>' +
+      candidates.slice(1, 5).map(c => {
+        const p = PLANETS.find(x => x.id === c.planetId);
+        return `<span style="color:${p.color}">${p.symbol} ${t.planets[p.id]}</span> · ${c.lineType} (${c.dist.toFixed(1)}°)`;
+      }).join('<br>') + '</div>';
+  }
+
+  tipEl.innerHTML = `
+    <button class="ct-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ct-head">
+      <span class="ct-symbol" style="color:${planet.color}">${planet.symbol}</span>
+      <span class="ct-name">${t.planets[planet.id]}</span>
+      <span class="ct-type" style="color:${planet.color}">${top.lineType}</span>
+    </div>
+    <div class="ct-dist">${influenceLevel.label} · ${top.dist.toFixed(1)}°</div>
+    <div class="ct-text">${interp}</div>
+    ${othersHtml}
+  `;
+  tipEl.classList.add('show');
+
+  // Position in center of map if no event
+  const mapEl = document.getElementById('map');
+  const rect = mapEl.getBoundingClientRect();
+  // Use the actual click position relative to map
+  const point = map.latLngToContainerPoint(latlng);
+  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  positionClickTooltip(tipEl, fakeEvt);
+
+  const closeBtn = tipEl.querySelector('.ct-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      hideClickTooltip();
+    });
+  }
+}
+
+function showClickTooltipNoInfluence(latlng) {
+  const tipEl = document.getElementById('clickTooltip');
+  const t = T[lang];
+  tipEl.style.setProperty('--tooltip-color', 'var(--text-muted)');
+  tipEl.innerHTML = `
+    <button class="ct-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="ct-head">
+      <span class="ct-name">${lang === 'ru' ? 'Нет влияния' : 'No influence'}</span>
+    </div>
+    <div class="ct-text">${lang === 'ru' ? 'В этой точке нет активных планетных линий в пределах 15°' : 'No active planetary lines within 15° at this point'}</div>
+  `;
+  tipEl.classList.add('show');
+  const mapEl = document.getElementById('map');
+  const rect = mapEl.getBoundingClientRect();
+  const point = map.latLngToContainerPoint(latlng);
+  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  positionClickTooltip(tipEl, fakeEvt);
+
+  const closeBtn = tipEl.querySelector('.ct-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      hideClickTooltip();
+    });
+  }
+}
+
+function positionClickTooltip(tipEl, evt) {
+  const mapEl = document.getElementById('map');
+  const mapRect = mapEl.getBoundingClientRect();
+  const x = evt.clientX - mapRect.left;
+  const y = evt.clientY - mapRect.top;
+  const tipW = tipEl.offsetWidth || 240;
+  const tipH = tipEl.offsetHeight || 80;
+  let left = x + 16;
+  let top = y - tipH - 16;
+  if (left + tipW > mapRect.width - 8) left = x - tipW - 16;
+  if (left < 8) left = 8;
+  if (top < 8) top = y + 16;
+  if (top + tipH > mapRect.height - 8) top = mapRect.height - tipH - 8;
+  tipEl.style.left = left + 'px';
+  tipEl.style.top = top + 'px';
+}
+
+function hideClickTooltip() {
+  document.getElementById('clickTooltip').classList.remove('show');
+}
+
+// ============================================================
+//  DATE INPUT & FORM
+// ============================================================
+function validateDate(str) {
+  const m = str.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  if (!m) return false;
+  const d = +m[1], mo = +m[2], y = +m[3];
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return false;
+  const dt = new Date(y, mo - 1, d);
+  return dt.getDate() === d && dt.getMonth() === mo - 1 && dt.getFullYear() === y && y >= 1900 && y <= 2100;
+}
+
+function formatInput(v) {
+  let s = v.replace(/[^\d]/g, '').slice(0, 8);
+  if (s.length > 2) s = s.slice(0, 2) + '.' + s.slice(2);
+  if (s.length > 5) s = s.slice(0, 5) + '.' + s.slice(5);
+  return s;
+}
+
+// ============================================================
+//  LANGUAGE
+// ============================================================
+function applyLang() {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.title = lang === 'ru'
+    ? 'Локационная астрология — Карта планетных линий по дате рождения'
+    : 'Locational Astrology — Planetary lines map by birth date';
+  document.getElementById('title').textContent = t.title;
+  document.getElementById('subtitle').textContent = t.subtitle;
+  document.getElementById('dateLabel').textContent = t.dateLabel;
+  document.getElementById('dateInput').placeholder = t.placeholder;
+  document.getElementById('countryLabel').textContent = t.countryLabel;
+  document.getElementById('countryInput').placeholder = t.countryPlaceholder;
+  document.getElementById('cityLabel').textContent = t.cityLabel;
+  document.getElementById('cityInput').placeholder = t.cityPlaceholder;
+  document.getElementById('calcBtn').textContent = t.calcBtn;
+  document.getElementById('errorMsg').textContent = t.error;
+  document.getElementById('geoErrorMsg').textContent = t.geoError;
+  document.getElementById('legendTitle').textContent = t.legendTitle;
+  document.getElementById('mcLabel').textContent = t.mcLabel;
+  document.getElementById('icLabel').textContent = t.icLabel;
+  document.getElementById('ascLabel').textContent = t.ascLabel;
+  document.getElementById('dsLabel').textContent = t.dsLabel;
+  document.getElementById('infoLabel').textContent = t.infoLabel;
+  document.getElementById('infoTitle').textContent = t.infoTitle;
+  document.getElementById('infoText1').textContent = t.infoText1;
+  document.getElementById('infoText2').textContent = t.infoText2;
+  document.getElementById('infoMC').textContent = t.infoMC;
+  document.getElementById('infoIC').textContent = t.infoIC;
+  document.getElementById('infoASC').textContent = t.infoASC;
+  document.getElementById('infoDS').textContent = t.infoDS;
+  document.getElementById('infoNote').textContent = t.infoNote;
+  document.getElementById('footer').textContent = t.footer;
+  document.getElementById('loaderText').textContent = t.loaderText;
+  document.getElementById('legendToggleLabel').textContent = t.legendToggleLabel;
+  document.getElementById('hintText').textContent = t.hintText;
+  document.getElementById('langLabel').textContent = lang === 'ru' ? 'EN' : 'RU';
+  document.getElementById('homeBtn').title = t.homeTitle;
+  document.getElementById('destinyEyebrow').textContent = t.destinyEyebrow;
+  document.getElementById('destinyLinesTitle').textContent = t.destinyLinesTitle;
+
+  renderLegend();
+  updateLegendUI();
+}
+
+// ============================================================
+//  PARTICLE SYSTEM (shared with index.html design system)
+// ============================================================
+(function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouseX = -9999, mouseY = -9999;
+  let w, h;
+  const isMobileInit = window.innerWidth < 768;
+  const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (isReducedMotion) return;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  document.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    if (touch) { mouseX = touch.clientX; mouseY = touch.clientY; }
+  }, { passive: true });
+  document.addEventListener('touchend', () => { mouseX = -9999; mouseY = -9999; }, { passive: true });
+  document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+  let pColors = [];
+  function getParticleColors() {
+    const style = getComputedStyle(document.documentElement);
+    return [
+      style.getPropertyValue('--particle-color-1').trim(),
+      style.getPropertyValue('--particle-color-2').trim(),
+      style.getPropertyValue('--particle-color-3').trim(),
+      style.getPropertyValue('--particle-color-4').trim()
+    ];
+  }
+  pColors = getParticleColors();
+
+  const COUNT = isMobileInit ? 60 : 120;
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(initial) {
+      this.x = Math.random() * w;
+      this.y = initial ? Math.random() * h : -30;
+      const r = Math.random();
+      this.isBright = r < 0.18;
+      this.size = this.isBright
+        ? 2.5 + Math.random() * 3.5
+        : 1.5 + Math.random() * 3;
+      this.speedX = (Math.random() - 0.5) * (isMobileInit ? 0.2 : 0.35);
+      this.speedY = (Math.random() - 0.5) * (isMobileInit ? 0.2 : 0.35);
+      this.color = pColors[Math.floor(Math.random() * pColors.length)];
+      this.baseOpacity = 0.3 + Math.random() * 0.45;
+      this.opacity = this.baseOpacity;
+      this.phase = Math.random() * Math.PI * 2;
+      this.speed = 0.006 + Math.random() * 0.012;
+      this.shape = Math.random();
+    }
+    update(time) {
+      const dx = mouseX - this.x;
+      const dy = mouseY - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const interactRadius = isMobileInit ? 150 : 280;
+      if (dist < interactRadius) {
+        const force = (1 - dist / interactRadius) * (isMobileInit ? 0.008 : 0.006);
+        this.speedX += (dx / dist) * force;
+        this.speedY += (dy / dist) * force;
+        this.opacity = Math.min(1, this.baseOpacity + (1 - dist / interactRadius) * 0.4);
+      }
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.speedX *= 0.993;
+      this.speedY *= 0.993;
+      if (Math.abs(mouseX + 9999) < 1) {
+        this.opacity = this.baseOpacity + Math.sin(time * this.speed + this.phase) * 0.15;
+        if (this.opacity < 0) this.opacity = 0;
+      }
+      if (this.x < -40) this.x = w + 40;
+      if (this.x > w + 40) this.x = -40;
+      if (this.y < -40) this.y = h + 40;
+      if (this.y > h + 40) this.y = -40;
+    }
+    draw() {
+      const isDark = currentTheme === 'dark';
+      if (isDark) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        const opacity = Math.min(1, this.opacity);
+        ctx.fillStyle = `rgba(${this.color}, ${opacity})`;
+        ctx.fill();
+        if (this.isBright) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.color}, ${opacity * 0.12})`;
+          ctx.fill();
+          ctx.strokeStyle = `rgba(${this.color}, ${opacity * 0.15})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(this.x - this.size * 4, this.y);
+          ctx.lineTo(this.x + this.size * 4, this.y);
+          ctx.moveTo(this.x, this.y - this.size * 4);
+          ctx.lineTo(this.x, this.y + this.size * 4);
+          ctx.stroke();
+        }
+      } else {
+        ctx.beginPath();
+        if (this.shape < 0.3) {
+          const s = this.size * 1.8;
+          ctx.moveTo(this.x, this.y - s);
+          ctx.lineTo(this.x + s * 0.6, this.y);
+          ctx.lineTo(this.x, this.y + s);
+          ctx.lineTo(this.x - s * 0.6, this.y);
+          ctx.closePath();
+        } else {
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        }
+        const opacity = Math.min(0.7, this.opacity);
+        ctx.fillStyle = `rgba(${this.color}, ${opacity})`;
+        ctx.fill();
+        if (this.isBright) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${this.color}, ${opacity * 0.1})`;
+          ctx.fill();
+        }
+      }
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+  function animate(time) {
+    ctx.clearRect(0, 0, w, h);
+    const isDark = currentTheme === 'dark';
+    const connectDist = isMobileInit ? 110 : 170;
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < connectDist) {
+          const alpha = (1 - dist / connectDist) * (isDark ? 0.15 : 0.07);
+          const avgOpacity = (particles[i].opacity + particles[j].opacity) / 2;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(${particles[i].color}, ${alpha * avgOpacity})`;
+          ctx.lineWidth = isDark ? 0.6 : 0.4;
+          ctx.stroke();
+        }
+      }
+    }
+
+    if (!isMobileInit) {
+      let connected = 0;
+      for (const p of particles) {
+        if (connected > 10) break;
+        const dx = mouseX - p.x;
+        const dy = mouseY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const rayDist = isDark ? 280 : 220;
+        if (dist < rayDist) {
+          const alpha = (1 - dist / rayDist) * (isDark ? 0.14 : 0.08);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouseX, mouseY);
+          ctx.strokeStyle = `rgba(${p.color}, ${alpha})`;
+          ctx.lineWidth = isDark ? 0.5 : 0.35;
+          ctx.stroke();
+          connected++;
+        }
+      }
+      if (mouseX > 0 && mouseY > 0) {
+        const g = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, isDark ? 50 : 35);
+        if (isDark) {
+          g.addColorStop(0, 'rgba(168,85,247,0.08)');
+          g.addColorStop(1, 'rgba(168,85,247,0)');
+        } else {
+          g.addColorStop(0, 'rgba(200,162,211,0.06)');
+          g.addColorStop(1, 'rgba(200,162,211,0)');
+        }
+        ctx.fillStyle = g;
+        ctx.fillRect(mouseX - 50, mouseY - 50, 100, 100);
+      }
+    }
+
+    for (const p of particles) {
+      p.update(time);
+      p.draw();
+    }
+
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  window.updateParticleColors = function() {
+    pColors = getParticleColors();
+    for (const p of particles) {
+      p.color = pColors[Math.floor(Math.random() * pColors.length)];
+    }
+  };
+})();
+
+// ============================================================
+//  INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(currentTheme);
+
+  // Initialize all planets visible
+  PLANETS.forEach(p => { visiblePlanets[p.id] = true; });
+
+  // Init map
+  initMap();
+  applyLang();
+
+  // Legend toggle (mobile)
+  const legendEl = document.getElementById('mapLegend');
+  const legendToggleBtn = document.getElementById('legendToggle');
+  legendToggleBtn.addEventListener('click', () => {
+    legendEl.classList.toggle('expanded');
+  });
+  // Click on collapsed legend header area expands it on mobile
+  const legendHeader = legendEl.querySelector('.legend-header');
+  legendHeader.addEventListener('click', e => {
+    if (isMobile && !legendEl.classList.contains('expanded')) {
+      // Only expand if clicking outside the action button
+      if (!e.target.closest('.legend-action')) {
+        legendEl.classList.add('expanded');
+      }
+    }
+  });
+  // Drag handle expand on mobile
+  const dragHandle = legendEl.querySelector('.legend-drag-handle');
+  if (dragHandle) {
+    dragHandle.addEventListener('click', () => {
+      legendEl.classList.toggle('expanded');
+    });
+  }
+
+  // Toggle all
+  document.getElementById('legendToggleAll').addEventListener('click', e => {
+    e.stopPropagation();
+    toggleAllPlanets();
+  });
+
+  // Theme toggle
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+
+  // Language toggle
+  document.getElementById('langToggle').addEventListener('click', () => {
+    lang = lang === 'ru' ? 'en' : 'ru';
+    applyLang();
+  });
+
+  // Form handling
+  const input = document.getElementById('dateInput');
+  const countryInput = document.getElementById('countryInput');
+  const cityInput = document.getElementById('cityInput');
+  const form = document.getElementById('birthForm');
+  const err = document.getElementById('errorMsg');
+  const geoErr = document.getElementById('geoErrorMsg');
+  const calcBtn = document.getElementById('calcBtn');
+  const originalBtnText = calcBtn.textContent;
+
+  function setLoading(loading) {
+    calcBtn.disabled = loading;
+    calcBtn.classList.toggle('loading', loading);
+    const t = T[lang];
+    calcBtn.innerHTML = loading
+      ? '<span class="btn-spinner"></span>' + t.calcBtnLoading
+      : originalBtnText;
+  }
+
+  input.addEventListener('input', () => {
+    const caret = input.selectionStart;
+    const before = input.value;
+    input.value = formatInput(input.value);
+    const diff = input.value.length - before.length;
+    const pos = Math.max(0, caret + diff);
+    try { input.setSelectionRange(pos, pos); } catch {}
+    err.classList.remove('show');
+  });
+
+  countryInput.addEventListener('input', () => {
+    geoErr.classList.remove('show');
+  });
+  cityInput.addEventListener('input', () => {
+    geoErr.classList.remove('show');
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const val = input.value.trim();
+    if (!validateDate(val)) {
+      err.classList.add('show');
+      input.focus();
+      return;
+    }
+    err.classList.remove('show');
+
+    const [dd, mm, yyyy] = val.split('.');
+    const date = new Date(+yyyy, +mm - 1, +dd);
+    buildMap(date);
+    history.replaceState(null, '', '#' + encodeURIComponent(val));
+
+    // Optional: city / country geocoding for destiny analysis
+    const country = countryInput.value.trim();
+    const city = cityInput.value.trim();
+    // Nominatim understands "city, country", "city", or "country" alone
+    const query = [city, country].filter(Boolean).join(', ');
+
+    if (query) {
+      setLoading(true);
+      geoErr.classList.remove('show');
+      const loc = await geocode(query);
+      setLoading(false);
+      if (!loc) {
+        geoErr.classList.add('show');
+        return;
+      }
+      currentLocation = loc;
+      placeCountryMarker([loc.lat, loc.lng], loc.name);
+      // Wait a moment for lines to be drawn, then analyze
+      setTimeout(() => {
+        const candidates = findLinesNear({ lat: loc.lat, lng: loc.lng }, 15);
+        renderDestiny(loc, candidates);
+        // Pan/zoom to the place
+        map.flyTo([loc.lat, loc.lng], Math.max(map.getZoom(), 4), { duration: 1.2 });
+        // Scroll destiny card into view
+        setTimeout(() => {
+          const card = document.getElementById('destinyCard');
+          if (card.style.display !== 'none') {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 1300);
+      }, 2200);
+    } else {
+      clearDestiny();
+    }
+  });
+
+  // Destiny card close
+  document.getElementById('destinyClose').addEventListener('click', clearDestiny);
+
+  // Hash init
+  const hashDate = decodeURIComponent(window.location.hash.replace('#', ''));
+  if (hashDate && validateDate(hashDate)) {
+    input.value = hashDate;
+    const [dd, mm, yyyy] = hashDate.split('.');
+    const date = new Date(+yyyy, +mm - 1, +dd);
+    setTimeout(() => buildMap(date), 300);
+  }
+
+  // Check URL for ?country= or ?city= param
+  const urlParams = new URLSearchParams(window.location.search);
+  const countryParam = urlParams.get('country');
+  const cityParam = urlParams.get('city');
+  if (countryParam) countryInput.value = countryParam;
+  if (cityParam) cityInput.value = cityParam;
+
+  // Update isMobile on resize
+  window.addEventListener('resize', () => {
+    isMobile = window.innerWidth < 768;
+  });
+});
+</script>
+</body>
+</html>
