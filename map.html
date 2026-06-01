@@ -11,11 +11,11 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://basemaps.cartocdn.com">
   <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -359,6 +359,42 @@ body {
 }
 @media (min-width: 640px) { .header p { font-size: 16px; max-width: 520px; } }
 
+/* ===== Page Navigation ===== */
+.page-nav {
+  display: flex; gap: 4px;
+  max-width: 480px; margin: 0 auto 20px;
+  padding: 4px;
+  border-radius: 50px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+  animation: fadeUp 0.4s ease both 0.05s;
+}
+@media (min-width: 640px) {
+  .page-nav { max-width: 520px; margin-bottom: 24px; }
+}
+.page-nav-item {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 12px;
+  border-radius: 50px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  white-space: nowrap;
+}
+@media (min-width: 640px) {
+  .page-nav-item { font-size: 13px; padding: 10px 16px; gap: 8px; }
+}
+.page-nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+@media (min-width: 640px) {
+  .page-nav-item svg { width: 16px; height: 16px; }
+}
+.page-nav-item:hover { color: var(--text-primary); }
+.page-nav-item.active {
+  background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+  color: white;
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
 /* ===== Form ===== */
 .form-card {
   max-width: 480px; margin: 0 auto 24px;
@@ -434,6 +470,8 @@ body {
   height: 70dvh;
   /* Ensure layout even before JS runs */
   contain: layout style;
+  /* Pre-set width so Leaflet has a stable box on mobile */
+  width: 100%;
 }
 @supports not (height: 70dvh) {
   .map-card { height: 70vh; }
@@ -1136,7 +1174,7 @@ body {
   .form-btn { padding: 11px 16px; font-size: 14px; }
   .error-msg { font-size: 11px; }
 
-  .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; min-height: 55dvh; }
+  .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; min-height: 55dvh; animation: none; opacity: 1; transform: none; aspect-ratio: 4/3; max-height: 600px; }
   #map { min-height: 380px; }
   .map-zoom { top: 10px; left: 10px; }
   .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
@@ -1236,6 +1274,18 @@ body {
 </div>
 
 <div class="container">
+  <!-- Page Navigation -->
+  <nav class="page-nav glass" aria-label="Навигация по сайту">
+    <a class="page-nav-item" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+      <span>Психоматрица</span>
+    </a>
+    <a class="page-nav-item active" href="map.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Карта планет</span>
+    </a>
+  </nav>
+
   <!-- Header -->
   <header class="header">
     <div class="header-icon-wrap">
@@ -1358,7 +1408,7 @@ body {
   <footer class="footer" id="footer">Локационная астрология — интерактивная карта планетных линий</footer>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" crossorigin=""></script>
 <script>
 'use strict';
 
@@ -1756,9 +1806,30 @@ function updateTiles() {
     subdomains: 'abcd',
     maxZoom: 19,
     attribution: ATTRIBUTION,
-    className: 'map-tiles'
+    className: 'map-tiles',
+    crossOrigin: true,
+    errorTileUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="%23f0e6f0"/></svg>'
   }).addTo(map);
   tileLayer.bringToBack();
+
+  // Show fallback message if too many tile errors
+  let errorCount = 0;
+  tileLayer.on('tileerror', () => {
+    errorCount++;
+    if (errorCount > 5 && map) {
+      const loader = document.getElementById('mapLoader');
+      if (loader && !loader.classList.contains('hidden') === false) return;
+      // Only show once
+      if (document.getElementById('tile-error-msg')) return;
+      const msg = document.createElement('div');
+      msg.id = 'tile-error-msg';
+      msg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:15;padding:14px 20px;background:var(--glass-bg-strong);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;font-size:12px;color:var(--text-secondary);text-align:center;max-width:280px;line-height:1.5;box-shadow:0 8px 24px var(--card-shadow);';
+      msg.innerHTML = lang === 'ru'
+        ? '⚠️ Тайлы карты не загружаются.<br>Проверьте интернет или VPN.'
+        : '⚠️ Map tiles failed to load.<br>Check your internet or VPN.';
+      document.getElementById('mapCard').appendChild(msg);
+    }
+  });
 }
 
 // ============================================================

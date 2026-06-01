@@ -363,6 +363,42 @@ body {
 .theme-icon { transition: transform 0.3s ease; }
 .toggle-btn:active .theme-icon { transform: rotate(180deg); }
 
+/* ===== Page Navigation ===== */
+.page-nav {
+  display: flex; gap: 4px;
+  max-width: 480px; margin: 0 auto 20px;
+  padding: 4px;
+  border-radius: 50px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+  animation: fadeUp 0.4s ease both 0.05s;
+}
+@media (min-width: 640px) {
+  .page-nav { max-width: 520px; margin-bottom: 24px; }
+}
+.page-nav-item {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 12px;
+  border-radius: 50px;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  white-space: nowrap;
+}
+@media (min-width: 640px) {
+  .page-nav-item { font-size: 13px; padding: 10px 16px; gap: 8px; }
+}
+.page-nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+@media (min-width: 640px) {
+  .page-nav-item svg { width: 16px; height: 16px; }
+}
+.page-nav-item:hover { color: var(--text-primary); }
+.page-nav-item.active {
+  background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+  color: white;
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
 /* ===== Header ===== */
 .header { text-align: center; margin-bottom: 24px; }
 @media (min-width: 640px) { .header { margin-bottom: 32px; } }
@@ -858,6 +894,18 @@ body {
 </div>
 
 <div class="container">
+  <!-- Page Navigation -->
+  <nav class="page-nav glass" aria-label="Навигация по сайту">
+    <a class="page-nav-item active" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+      <span>Психоматрица</span>
+    </a>
+    <a class="page-nav-item" href="map.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Карта планет</span>
+    </a>
+  </nav>
+
   <!-- Header -->
   <header class="header">
     <div class="header-icon-wrap">
