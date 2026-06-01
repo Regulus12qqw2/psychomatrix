@@ -836,6 +836,10 @@ body {
   padding: 2px 6px !important;
 }
 .leaflet-control-attribution a { color: var(--accent-lavender) !important; }
+/* Hide the .leaflet-attribution-flag div (default 1em x 0.6669em inline
+   element Leaflet injects — renders as a tiny colored square on top of
+   the blur, often mistaken for a flag emoji). */
+.leaflet-attribution-flag { display: none !important; }
 
 /* Line drawing animation */
 .leaflet-overlay-pane svg path.astro-line {
@@ -1842,7 +1846,10 @@ function initMap() {
 
     L.control.attribution({
       position: 'bottomright',
-      prefix: ''
+      // false = полностью убрать дефолтный Leaflet-префикс
+      // (с ним браузер рисует favicon возле ссылки — на тёмном фоне
+      // атрибуции он выглядит как маленький сине-жёлтый квадратик).
+      prefix: false
     }).addTo(map);
 
     // Custom zoom controls
