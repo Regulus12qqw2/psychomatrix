@@ -469,8 +469,7 @@ body {
   height: 55vh; min-height: 380px;
   /* dvh = dynamic viewport height (mobile-safe, accounts for URL bar) */
   height: 55dvh;
-  /* Ensure layout even before JS runs */
-  contain: layout style;
+  /* NOTE: removed contain: layout style — it breaks Leaflet's size measurement */
   /* Pre-set width so Leaflet has a stable box on mobile */
   width: 100%;
 }
@@ -1175,7 +1174,9 @@ body {
   .form-btn { padding: 11px 16px; font-size: 14px; }
   .error-msg { font-size: 11px; }
 
-  .map-card { height: 45vh; min-height: 300px; border-radius: 18px; height: 45dvh; min-height: 45dvh; animation: none; opacity: 1; transform: none; max-height: 480px; }
+  /* Mobile: disable scaleIn animation entirely — it causes Leaflet to measure
+     wrong dimensions during the transition, leaving a blank map on resize. */
+  .map-card { height: 45dvh; min-height: 300px; max-height: 480px; border-radius: 18px; animation: none; opacity: 1; transform: none; }
   #map { min-height: 300px; }
   .map-zoom { top: 10px; left: 10px; }
   .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
@@ -1765,15 +1766,32 @@ function initMap() {
     });
 
     // Force Leaflet to recalculate container size.
-    // Critical on mobile: map-card has scaleIn animation (0.7s) that
-    // changes container dimensions; Leaflet needs invalidateSize after it.
+    // Critical on mobile: container dimensions change due to URL bar
+    // show/hide, orientation changes, and soft keyboard.
     const recalc = () => { if (map) map.invalidateSize(); };
     setTimeout(recalc, 50);
     setTimeout(recalc, 200);
-    setTimeout(recalc, 800);   // after scaleIn animation
+    setTimeout(recalc, 500);
     setTimeout(recalc, 1500);  // safety net
-    window.addEventListener('orientationchange', () => setTimeout(recalc, 300));
-    window.addEventListener('resize', () => setTimeout(recalc, 100));
+
+    window.addEventListener('orientationchange', () => setTimeout(recalc, 400));
+    window.addEventListener('resize', () => setTimeout(recalc, 150));
+    window.addEventListener('scroll', () => { if (map) map.invalidateSize(); }, { passive: true });
+
+    // ResizeObserver: the most reliable way to detect container size changes.
+    // Covers soft keyboard, URL bar toggle, split-screen, fold/unfold.
+    if (typeof ResizeObserver !== 'undefined') {
+      const mapCard = document.getElementById('mapCard');
+      let resizeTimer = null;
+      const ro = new ResizeObserver(() => {
+        // Debounce: fire once after layout settles
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          if (map) map.invalidateSize();
+        }, 80);
+      });
+      ro.observe(mapCard);
+    }
 
     // Hide loader ASAP (don't wait for whenReady — it can hang on mobile)
     let loaderHidden = false;
@@ -2677,15 +2695,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize all planets visible
   PLANETS.forEach(p => { visiblePlanets[p.id] = true; });
 
-  // Init map after layout is fully calculated
-  // requestAnimationFrame ensures the DOM has final dimensions
+  // Init map after layout is fully calculated.
+  // On mobile, skip animation delay — map-card has animation:none
+  // so dimensions are stable immediately.
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      initMap();
-      // Extra invalidateSize after Leaflet is ready + CSS animations
-      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
-      setTimeout(() => { if (map) map.invalidateSize(); }, 900);
-    });
+    initMap();
+    // Extra invalidateSize after Leaflet is ready
+    setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+    setTimeout(() => { if (map) map.invalidateSize(); }, 600);
+    setTimeout(() => { if (map) map.invalidateSize(); }, 1200);
   });
   applyLang();
 
