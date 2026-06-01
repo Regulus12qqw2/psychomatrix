@@ -1,108 +1,65 @@
-# Easy-Opencode 3.0 🚀
+# Психоматрица · Квадрат Пифагора
 
-**9-pack hybrid super-pack for OpenCode** — ECC + gstack + ui-ux-pro-max + caveman + get-shit-done-redux + impeccable + cybersecurity + cli-anything.
+Бесплатный онлайн-калькулятор **Квадрата Пифагора** (нумерологическая психоматрица по дате рождения) с расшифровкой всех 9 ячеек, рабочих чисел и линий. Без бэкенда, без регистрации — чистый статический сайт.
 
-Автономная AI-разработка: от идеи до готового продукта без участия человека.
+## Демо (GitHub Pages)
 
-## Что нового в 3.0
-
-| Фича | v2.0 | v3.0 |
-|------|------|------|
-| `/run` autonomous mode | ❌ | ✅ |
-| @runner agent | ❌ | ✅ |
-| Impeccable design | ❌ | ✅ |
-| Cybersecurity | ❌ | ✅ (top-50) |
-| CLI-Anything | ❌ | ✅ (80+) |
-| Skill packs | 6 | 9 |
-| Skills count | 90+ | 120+ |
+| Страница | Ссылка |
+|----------|--------|
+| Квадрат Пифагора (главная) | https://regulus12qqw2.github.io/psychomatrix/ |
+| **Локационная астрология** · карта планетных линий | https://regulus12qqw2.github.io/psychomatrix/map.html |
 
 ## Что внутри
 
-| Компонент | Источник | Что даёт |
-|-----------|----------|----------|
-| **ECC** | 232+ skills | TDD, architecture, security, code review |
-| **gstack** | 56+ skills | Browser QA, ship pipeline, CEO/eng review |
-| **ui-ux-pro-max** | 7 skills | Топовый UI/UX, дизайн-системы |
-| **caveman** | 7 skills | ~75% экономия токенов |
-| **get-shit-done-redux** | 91 workflows | Spec-driven разработка |
-| **impeccable** | 20+ commands | Премиальный дизайн (OKLCH, motion, anti-slop) |
-| **cybersecurity** | top-50 | OWASP, API, container, secrets security |
-| **cli-anything** | 80+ CLIs | Database, containers, git, build tools |
+- **index.html** — расчёт психоматрицы по дате рождения. Калькулятор + расшифровка характера, энергии, интересов, здоровья, логики, труда, удачи, долга, памяти.
+- **map.html** — локационная астрология. Строит интерактивную карту мира с линиями планет **MC / IC / ASC / DS** по дате и времени рождения. Leaflet + тайлы CARTO.
+- **.github/workflows/pages.yml** — автодеплой на GitHub Pages при push в `master` / `main`.
 
-## Особенности
+## Стек
 
-- **`/run` Autonomous Mode** — полный цикл: idea → research → design → build → test → qa → security → ship. Без участия человека
-- **@runner agent** — автономный product builder с 11 фазами
-- **Depth=1 guard** — @build единственный диспетчер. Циклы исключены
-- **Caveman Adaptive** — лаконично по умолчанию, расширяется для security
-- **Impeccable Design** — премиальный UI/UX без "AI-сгенерированного" вида
-- **Cybersecurity** — автоматическая проверка безопасности
-- **9 агентов** — @build, @runner, @planner, @architect, @designer, @reviewer, @tester, @deployer, @investigator
-- **11 команд** — /run /plan /tdd /design /review /ship /qa /investigate /fast /caveman /help
-- **9 MCP серверов** — Playwright, Git, Filesystem, Memory, Fetch, GitHub, Docker, SQLite, Brave Search
+- Чистый HTML / CSS / JavaScript, без фреймворков и сборщиков
+- Тёмная и светлая темы (auto по `prefers-color-scheme`)
+- Glassmorphism UI, OKLCH-палитра, адаптив до 360 px
+- Leaflet 1.9.4 (jsDelivr → cdnjs fallback) · OpenStreetMap · CARTO basemaps
+- Nominatim для геокодинга
 
-## Установка
+## Локальный запуск
 
-```
-# 1. Скопируй .opencode/ в корень проекта
-# 2. Скажи агенту: "установи Easy-Opencode 3.0"
-# 3. Агент сам всё настроит
+Сайт полностью статический — открыть `index.html` в браузере или поднять любой статик-сервер:
+
+```bash
+# Python
+python -m http.server 8000
+
+# Node (если установлен npx)
+npx serve .
 ```
 
-## Быстрый старт
+Затем открой http://localhost:8000/
 
-- **`/run [идея]`** — полный автономный цикл (НОВОЕ!)
-- `/plan` — новый проект или сложная фича
-- `/design` — UI/UX дизайн (impeccable)
-- `/tdd` — TDD цикл (test→code→refactor)
-- `/review` — код-ревью + security
-- `/qa` — браузерное QA
-- `/ship` — релиз
-- `/fast` — быстрая правка
+## Деплой
 
-## /run — Autonomous Mode
+Деплой автоматический через GitHub Actions:
 
-Команда `/run` запускает полный автономный цикл:
-
-```
-/run создай лендинг для стартапа
+```bash
+git add .
+git commit -m "feat: описание изменения"
+git push origin master
 ```
 
-**11 фаз:**
-1. Research — анализ рынка
-2. Discuss — уточнение (если нужно)
-3. Spec — спецификация
-4. Design — UI/UX (impeccable)
-5. Plan — план
-6. Build — реализация
-7. Test — тесты (80%+ coverage)
-8. QA — браузерное тестирование
-9. Security — проверка безопасности
-10. Verify — финальная верификация
-11. Ship — коммит + результат
+Workflow `Deploy to GitHub Pages` соберёт артефакт из корня репо и зальёт на Pages. Историю деплоев смотри во вкладке **Actions** → https://github.com/Regulus12qqw2/psychomatrix/actions
 
-## Структура .opencode/
+## Структура
 
 ```
-.opencode/
-├── agents/          ← 9 агентов (включая @runner)
-├── commands/        ← 11 команд (включая /run)
-├── hooks/           ← 5 хуков (включая run-autopilot)
-├── rules/           ← 5 правил (включая run-rules)
-├── skills/          ← 9 паков (120+ навыков)
-│   ├── ecc-core/
-│   ├── gstack-core/
-│   ├── caveman/
-│   ├── ui-ux-pro-max/
-│   ├── open-design/
-│   ├── gsd-workflows/
-│   ├── impeccable/      ← НОВЫЙ
-│   ├── cybersecurity/   ← НОВЫЙ
-│   └── cli-anything/    ← НОВЫЙ
-├── installer/       ← Self-installer
-├── plans/           ← Папка для планов
-├── settings.jsonc   ← Конфигурация
-└── AGENTS.md        ← Master-документация
+psychomatrix/
+├── index.html               # Квадрат Пифагора · ~1600 строк
+├── map.html                 # Локационная астрология · ~2500 строк
+├── README.md
+├── .gitignore
+└── .github/
+    └── workflows/
+        └── pages.yml        # GitHub Pages deploy
 ```
 
 ## License
