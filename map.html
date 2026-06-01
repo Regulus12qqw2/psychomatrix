@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://basemaps.cartocdn.com">
   <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css">
+  <link rel="preconnect" href="https://nominatim.openstreetmap.org" crossorigin>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -470,9 +470,24 @@ body {
   height: 70dvh;
   /* Ensure layout even before JS runs */
   contain: layout style;
-  /* Pre-set width so Leaflet has a stable box on mobile */
+/* Pre-set width so canvas has a stable box on mobile */
   width: 100%;
 }
+
+/* Custom canvas map */
+#customMap {
+  position: absolute; inset: 0;
+  display: block;
+  background: var(--bg-mid1);
+  z-index: 1;
+  width: 100%; height: 100%;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+}
+#customMap.dragging { cursor: grabbing; }
 @supports not (height: 70dvh) {
   .map-card { height: 70vh; }
 }
@@ -483,37 +498,7 @@ body {
   .map-card { height: 75vh; min-height: 600px; height: 75dvh; }
 }
 
-#map {
-  position: absolute; inset: 0;
-  background: var(--bg-mid1);
-  z-index: 1;
-  width: 100%; height: 100%;
-  /* Critical for mobile touch gestures on the map */
-  touch-action: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Leaflet container override for our rounded card */
-.leaflet-container {
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-mid1);
-  outline: none;
-  width: 100%; height: 100%;
-  touch-action: none;
-}
-.leaflet-container a { color: var(--accent-lilac-dark); }
-[data-theme="dark"] .leaflet-container a { color: var(--accent-lilac); }
-
-/* Tile fade-in for smooth theme switching */
-.leaflet-tile {
-  filter: saturate(0.85);
-  transition: filter 0.4s ease;
-}
-[data-theme="dark"] .leaflet-tile {
-  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.7);
-}
+/* Map zoom controls */
 
 /* Map zoom controls */
 .map-zoom {
@@ -779,51 +764,15 @@ body {
 .map-click-tooltip .ct-close:hover { background: var(--map-row-hover); color: var(--text-primary); }
 .map-click-tooltip .ct-close svg { width: 10px; height: 10px; }
 
-/* Map attribution */
-.leaflet-control-attribution {
-  background: var(--map-attr-bg) !important;
-  color: var(--map-attr-color) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--map-divider);
-  border-radius: 8px;
-  font-size: 10px !important;
-  padding: 2px 6px !important;
-}
-.leaflet-control-attribution a { color: var(--accent-lavender) !important; }
-
-/* Line drawing animation */
-.leaflet-overlay-pane svg path.astro-line {
-  stroke-dasharray: 6000;
-  stroke-dashoffset: 6000;
-  animation: drawLine 1.8s ease-out forwards;
-  transition: stroke-width 0.2s, opacity 0.2s, filter 0.2s;
-}
-.leaflet-overlay-pane svg path.astro-line.planet-0 { animation-delay: 0s; }
-.leaflet-overlay-pane svg path.astro-line.planet-1 { animation-delay: 0.08s; }
-.leaflet-overlay-pane svg path.astro-line.planet-2 { animation-delay: 0.16s; }
-.leaflet-overlay-pane svg path.astro-line.planet-3 { animation-delay: 0.24s; }
-.leaflet-overlay-pane svg path.astro-line.planet-4 { animation-delay: 0.32s; }
-.leaflet-overlay-pane svg path.astro-line.planet-5 { animation-delay: 0.40s; }
-.leaflet-overlay-pane svg path.astro-line.planet-6 { animation-delay: 0.48s; }
-.leaflet-overlay-pane svg path.astro-line.planet-7 { animation-delay: 0.56s; }
-.leaflet-overlay-pane svg path.astro-line.planet-8 { animation-delay: 0.64s; }
-.leaflet-overlay-pane svg path.astro-line.planet-9 { animation-delay: 0.72s; }
-.leaflet-overlay-pane svg path.astro-line.planet-10 { animation-delay: 0.80s; }
-
-.leaflet-overlay-pane svg path.astro-line:hover {
-  stroke-width: 3.5 !important;
-  opacity: 1 !important;
-  filter: drop-shadow(0 0 4px currentColor);
-  cursor: pointer;
-}
-
-.leaflet-overlay-pane svg path.astro-line.mc { stroke-dasharray: 0; }
-.leaflet-overlay-pane svg path.astro-line.mc.animated { stroke-dasharray: 6000; stroke-dashoffset: 6000; }
-
-.leaflet-overlay-pane svg path.astro-line-hidden {
-  opacity: 0 !important;
+/* Map attribution (custom canvas doesn't need it, but kept for design harmony) */
+.map-attribution {
+  position: absolute; bottom: 4px; right: 8px; z-index: 7;
+  font-size: 9px; color: var(--text-muted);
+  background: var(--map-attr-bg);
+  padding: 2px 6px;
+  border-radius: 6px;
   pointer-events: none;
+  letter-spacing: 0.02em;
 }
 
 /* Tooltip hint */
@@ -1009,34 +958,6 @@ body {
   margin-top: 1px;
 }
 
-/* Country marker (custom div icon on map) */
-.country-marker {
-  width: 28px; height: 28px;
-  position: relative;
-  pointer-events: none;
-}
-.country-marker .cm-pulse {
-  position: absolute; inset: 0;
-  border-radius: 50%;
-  background: var(--accent-lilac);
-  opacity: 0.4;
-  animation: cmPulse 2s ease-out infinite;
-}
-.country-marker .cm-dot {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--accent-lilac);
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px rgba(200,162,211,0.4), 0 4px 10px rgba(0,0,0,0.3);
-}
-@keyframes cmPulse {
-  0% { transform: scale(0.5); opacity: 0.6; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
-
 /* Geocoding loader inside button */
 .form-btn.loading {
   pointer-events: none;
@@ -1175,7 +1096,7 @@ body {
   .error-msg { font-size: 11px; }
 
   .map-card { height: 55vh; min-height: 380px; border-radius: 18px; height: 55dvh; min-height: 55dvh; animation: none; opacity: 1; transform: none; aspect-ratio: 4/3; max-height: 600px; }
-  #map { min-height: 380px; }
+  #customMap { min-height: 380px; }
   .map-zoom { top: 10px; left: 10px; }
   .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
   .map-zoom-btn svg { width: 16px; height: 16px; }
@@ -1211,7 +1132,7 @@ body {
   .info-block .info-line span { font-size: 10px; }
 
   .footer { font-size: 10px; }
-  .leaflet-control-attribution { font-size: 9px !important; padding: 1px 5px !important; }
+  .map-attribution { font-size: 8px; padding: 1px 5px; }
 }
 
 @media (max-width: 380px) {
@@ -1243,7 +1164,7 @@ body {
   #particles-canvas { display: none; }
   .bg-orbs span { animation: none !important; }
   .bg-ring { animation: none !important; }
-  .leaflet-overlay-pane svg path.astro-line { animation: none !important; stroke-dashoffset: 0 !important; }
+  /* Canvas map has no animations to disable on mobile */
 }
 </style>
 </head>
@@ -1320,7 +1241,7 @@ body {
 
   <!-- Map -->
   <div class="map-card glass" id="mapCard">
-    <div id="map"></div>
+    <canvas id="customMap"></canvas>
 
     <!-- Custom zoom controls -->
     <div class="map-zoom">
@@ -1408,7 +1329,6 @@ body {
   <footer class="footer" id="footer">Локационная астрология — интерактивная карта планетных линий</footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js" crossorigin=""></script>
 <script>
 'use strict';
 
@@ -1573,17 +1493,31 @@ const PLANETS = [
 // ============================================================
 //  STATE
 // ============================================================
-let map = null;
-let tileLayer = null;
-let planetGroups = {};    // { planetId: L.featureGroup }
 let visiblePlanets = {}; // { planetId: bool }
+let planetGroups = {};   // { planetId: { color, lines: [{type, points}], visible: bool } }
 let lastClickLatLng = null;
 let isAnimating = false;
 let isMobile = window.innerWidth < 768;
+let currentLocation = null; // { lat, lng, name }
 
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
-const TILE_DARK  = 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png';
-const ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
+// Canvas map engine (custom, zero-dependency)
+const canvasMap = {
+  canvas: null,
+  ctx: null,
+  dpr: 1,
+  width: 0,          // CSS pixels
+  height: 0,
+  baseScale: 0,      // pixels per degree at zoom=1 (fills width = 360°)
+  centerLng: 10,
+  centerLat: 25,
+  zoom: 1,           // 1 = whole world fits horizontally
+  minZoom: 0.5,
+  maxZoom: 8,
+  panning: null,     // { startX, startY, startLng, startLat, moved }
+  pinching: null,    // { startDist, startZoom, midX, midY, startLng, startLat }
+  renderQueued: false,
+  rafId: null
+};
 
 // ============================================================
 //  ASTRO CALCULATIONS (simplified mean-motion model)
@@ -1711,53 +1645,598 @@ function pointToSegmentDistance(p3, a3, b3) {
 }
 
 // ============================================================
-//  MAP INITIALIZATION
+//  CANVAS MAP — projection
 // ============================================================
+function latLngToScreen(lat, lng) {
+  const bs = canvasMap.baseScale * canvasMap.zoom;
+  const x = canvasMap.width  / 2 + (lng - canvasMap.centerLng) * bs;
+  const y = canvasMap.height / 2 - (lat - canvasMap.centerLat) * bs;
+  return { x, y };
+}
+
+function screenToLatLng(x, y) {
+  const bs = canvasMap.baseScale * canvasMap.zoom;
+  const lng = canvasMap.centerLng + (x - canvasMap.width  / 2) / bs;
+  const lat = canvasMap.centerLat - (y - canvasMap.height / 2) / bs;
+  return { lat, lng };
+}
+
+function normalizeLngRange(min, max) {
+  // Wrap center longitude to keep [min,max] inside [-180,180] when possible
+  let c = canvasMap.centerLng;
+  while (c > max) c -= 360;
+  while (c < min) c += 360;
+  if (c >= min && c <= max) canvasMap.centerLng = c;
+}
+
+// ============================================================
+//  CANVAS MAP — render pipeline
+// ============================================================
+function requestRender() {
+  if (canvasMap.renderQueued) return;
+  canvasMap.renderQueued = true;
+  canvasMap.rafId = requestAnimationFrame(() => {
+    canvasMap.renderQueued = false;
+    renderMap();
+  });
+}
+
+function renderMap() {
+  if (!canvasMap.ctx) return;
+  const ctx = canvasMap.ctx;
+  const w = canvasMap.width;
+  const h = canvasMap.height;
+  const dpr = canvasMap.dpr;
+  const isDark = currentTheme === 'dark';
+
+  // HiDPI reset
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  // Background gradient
+  const bg0 = isDark ? '#1a1230' : '#f7f1fa';
+  const bg1 = isDark ? '#0f0a1e' : '#faf5fc';
+  const grd = ctx.createLinearGradient(0, 0, 0, h);
+  grd.addColorStop(0, bg0);
+  grd.addColorStop(1, bg1);
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, w, h);
+
+  drawGraticule(ctx, w, h, isDark);
+  drawContinents(ctx, w, h, isDark);
+  drawAstroLines(ctx, w, h, isDark);
+  if (currentLocation) {
+    drawLocationMarker(ctx, w, h, isDark);
+  }
+}
+
+function drawGraticule(ctx, w, h, isDark) {
+  const gridColor    = isDark ? 'rgba(180,150,220,0.18)' : 'rgba(160,130,190,0.22)';
+  const gridColorMaj = isDark ? 'rgba(200,170,235,0.32)' : 'rgba(140,110,170,0.32)';
+  const labelColor   = isDark ? 'rgba(220,205,240,0.55)' : 'rgba(80,60,100,0.55)';
+  const equatorColor = isDark ? 'rgba(200,162,211,0.40)' : 'rgba(160,120,180,0.40)';
+
+  // Lat lines every 30° (15° when zoomed in)
+  const latStep = canvasMap.zoom > 3 ? 15 : 30;
+  const lngStep = canvasMap.zoom > 3 ? 15 : 30;
+
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = gridColor;
+  for (let lat = -90; lat <= 90; lat += latStep) {
+    if (lat === 0) continue;
+    const a = latLngToScreen(lat, -180);
+    const b = latLngToScreen(lat,  180);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  // Lng lines every 30/15°
+  for (let lng = -180; lng <= 180; lng += lngStep) {
+    const a = latLngToScreen(85,  lng);
+    const b = latLngToScreen(-85, lng);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  // Equator (thicker)
+  const eL = latLngToScreen(0, -180);
+  const eR = latLngToScreen(0,  180);
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = equatorColor;
+  ctx.beginPath();
+  ctx.moveTo(eL.x, eL.y);
+  ctx.lineTo(eR.x, eR.y);
+  ctx.stroke();
+  ctx.lineWidth = 0.5;
+
+  // Prime meridian
+  const pT = latLngToScreen(85,  0);
+  const pB = latLngToScreen(-85, 0);
+  ctx.strokeStyle = gridColorMaj;
+  ctx.beginPath();
+  ctx.moveTo(pT.x, pT.y);
+  ctx.lineTo(pB.x, pB.y);
+  ctx.stroke();
+
+  // Coordinate labels (sparse, only when zoomed in or near center)
+  if (canvasMap.zoom > 1.5) {
+    ctx.fillStyle = labelColor;
+    ctx.font = '500 9px Inter, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    for (let lng = -180; lng <= 180; lng += 30) {
+      const p = latLngToScreen(0, lng);
+      if (p.x > 4 && p.x < w - 30 && p.y > 4 && p.y < h - 14) {
+        ctx.fillText((lng > 0 ? lng + '°E' : -lng + '°W'), p.x + 3, p.y + 3);
+      }
+    }
+    ctx.textAlign = 'right';
+    for (let lat = -60; lat <= 60; lat += 30) {
+      if (lat === 0) continue;
+      const p = latLngToScreen(lat, 0);
+      if (p.x > 24 && p.x < w - 4 && p.y > 4 && p.y < h - 4) {
+        ctx.fillText((lat > 0 ? lat + '°N' : -lat + '°S'), p.x - 4, p.y - 4);
+      }
+    }
+  }
+}
+
+// Simplified continent outlines — each is an array of [lng, lat] closed polygon
+// Coordinates are approximate, designed for stylized display, not navigation.
+const CONTINENT_OUTLINES = [
+  // North America
+  { name: 'NA', poly: [
+    [-168,68],[-160,70],[-150,71],[-140,70],[-128,70],[-115,72],[-100,74],[-85,76],[-75,78],[-65,82],[-58,83],[-52,76],[-55,68],[-60,60],[-65,55],[-72,52],[-78,48],[-83,44],[-82,40],[-75,35],[-78,30],[-82,28],[-89,28],[-95,29],[-97,26],[-99,22],[-105,20],[-110,24],[-117,32],[-122,37],[-125,42],[-128,50],[-135,57],[-145,60],[-156,62],[-164,65],[-168,68]
+  ]},
+  // Greenland (separate landmass)
+  { name: 'GL', poly: [
+    [-55,60],[-45,62],[-30,65],[-22,70],[-20,76],[-25,80],[-35,83],[-45,82],[-52,78],[-55,70],[-55,60]
+  ]},
+  // South America
+  { name: 'SA', poly: [
+    [-80,12],[-72,12],[-62,10],[-55,5],[-50,0],[-45,-2],[-38,-8],[-35,-15],[-38,-22],[-45,-30],[-55,-35],[-62,-42],[-67,-50],[-72,-55],[-75,-52],[-72,-42],[-70,-32],[-72,-20],[-77,-12],[-80,-3],[-80,5],[-80,12]
+  ]},
+  // Europe
+  { name: 'EU', poly: [
+    [-9,38],[-2,36],[3,42],[5,45],[8,44],[10,46],[14,46],[18,44],[20,40],[25,38],[28,40],[30,42],[35,42],[40,40],[45,37],[50,38],[55,42],[60,45],[65,55],[60,62],[55,68],[45,70],[35,68],[28,65],[22,68],[20,70],[15,68],[10,65],[8,60],[5,58],[0,55],[-3,50],[-5,45],[-9,42],[-9,38]
+  ]},
+  // Africa
+  { name: 'AF', poly: [
+    [-17,35],[-10,33],[0,33],[9,32],[12,30],[15,30],[20,32],[25,32],[32,30],[35,20],[38,12],[42,5],[50,-5],[48,-15],[42,-22],[35,-28],[30,-32],[22,-34],[18,-34],[14,-25],[12,-15],[9,-5],[5,5],[-2,8],[-8,12],[-14,15],[-17,20],[-17,28],[-17,35]
+  ]},
+  // Asia
+  { name: 'AS', poly: [
+    [25,38],[30,40],[35,42],[40,42],[45,38],[50,40],[55,42],[60,45],[65,55],[70,58],[78,55],[85,55],[95,55],[105,58],[115,60],[125,65],[135,68],[145,70],[160,70],[170,68],[175,62],[170,55],[160,52],[150,50],[140,45],[135,40],[128,38],[122,35],[120,30],[115,25],[110,20],[105,18],[100,12],[98,8],[95,5],[92,15],[88,22],[82,22],[78,22],[75,28],[70,32],[60,32],[55,28],[50,25],[45,28],[40,32],[35,35],[30,32],[25,38]
+  ]},
+  // India subcontinent (separate lobe)
+  { name: 'IN', poly: [
+    [68,23],[72,22],[76,18],[80,12],[83,8],[88,8],[88,18],[86,22],[82,25],[76,28],[72,28],[68,25],[68,23]
+  ]},
+  // Indonesia / SE Asia islands (stylized as one block)
+  { name: 'SEA', poly: [
+    [95,5],[100,4],[105,0],[110,-2],[115,-5],[120,-8],[128,-8],[135,-5],[140,-3],[140,2],[135,1],[128,3],[120,5],[115,5],[110,5],[105,5],[100,6],[95,5]
+  ]},
+  // Australia
+  { name: 'AU', poly: [
+    [113,-22],[118,-20],[125,-14],[132,-12],[140,-12],[145,-15],[150,-22],[153,-28],[150,-35],[142,-38],[132,-38],[122,-35],[115,-32],[113,-25],[113,-22]
+  ]},
+  // New Zealand
+  { name: 'NZ', poly: [
+    [172,-41],[175,-38],[178,-37],[178,-42],[175,-46],[170,-46],[170,-43],[172,-41]
+  ]},
+  // Antarctica (top edge)
+  { name: 'AQ', poly: [
+    [-180,-68],[-150,-72],[-120,-74],[-90,-75],[-60,-73],[-30,-72],[0,-70],[30,-68],[60,-67],[90,-66],[120,-66],[150,-68],[180,-68],[180,-90],[-180,-90],[-180,-68]
+  ]},
+  // Japan
+  { name: 'JP', poly: [
+    [130,33],[133,33],[136,35],[140,36],[142,40],[145,44],[142,45],[138,38],[134,35],[130,33]
+  ]},
+  // Madagascar
+  { name: 'MG', poly: [
+    [44,-12],[48,-15],[50,-20],[48,-25],[45,-25],[43,-22],[43,-15],[44,-12]
+  ]},
+  // British Isles
+  { name: 'GB', poly: [
+    [-5,50],[-3,52],[-2,55],[-3,58],[-5,58],[-7,55],[-8,52],[-5,50]
+  ]}
+];
+
+function drawContinents(ctx, w, h, isDark) {
+  const fill   = isDark ? 'rgba(120,100,150,0.42)' : 'rgba(220,205,232,0.85)';
+  const stroke = isDark ? 'rgba(180,150,210,0.55)' : 'rgba(150,120,180,0.65)';
+
+  // For wraparound safety, draw each continent 3 times shifted by -360/0/+360
+  for (const cont of CONTINENT_OUTLINES) {
+    for (let shift = -360; shift <= 360; shift += 360) {
+      ctx.beginPath();
+      let first = true;
+      for (const [lng, lat] of cont.poly) {
+        const p = latLngToScreen(lat, lng + shift);
+        if (first) { ctx.moveTo(p.x, p.y); first = false; }
+        else { ctx.lineTo(p.x, p.y); }
+      }
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+  }
+
+  // Continent labels (only at low zoom, only for major continents)
+  if (canvasMap.zoom < 4) {
+    ctx.fillStyle = isDark ? 'rgba(220,205,240,0.5)' : 'rgba(90,60,110,0.55)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const labels = [
+      { c: [-100,45], t: 'N. AMERICA' },
+      { c: [-60,15], t: 'S. AMERICA' },
+      { c: [15,52], t: 'EUROPE' },
+      { c: [20,5], t: 'AFRICA' },
+      { c: [90,40], t: 'ASIA' },
+      { c: [78,15], t: 'INDIA' },
+      { c: [133,-25], t: 'AUSTRALIA' },
+      { c: [0,-72], t: 'ANTARCTICA' }
+    ];
+    for (const L of labels) {
+      const p = latLngToScreen(L.c[1], L.c[0]);
+      if (p.x > 0 && p.x < w && p.y > 0 && p.y < h) {
+        ctx.font = '600 10px Inter, sans-serif';
+        ctx.fillText(L.t, p.x, p.y);
+      }
+    }
+  }
+}
+
+function drawAstroLines(ctx, w, h, isDark) {
+  // Line-style defaults
+  const baseAlpha = 0.55;
+
+  for (const pid in planetGroups) {
+    const grp = planetGroups[pid];
+    if (!grp || !grp.visible || !visiblePlanets[pid]) continue;
+
+    ctx.strokeStyle = grp.color;
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.globalAlpha = baseAlpha;
+
+    for (const line of grp.lines) {
+      drawWrappedPolyline(ctx, line.points, w);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawWrappedPolyline(ctx, points, w) {
+  // Draw a polyline, breaking into sub-paths when the line crosses the
+  // map edge (more than half a screen width in one step).
+  let subPathOpen = false;
+  let lastX = 0, lastY = 0;
+  const margin = 100;
+
+  for (let i = 0; i < points.length; i++) {
+    const [lat, lng] = points[i];
+
+    // Try the closest of 3 wraps (-360, 0, +360)
+    let bestP = null, bestDx = Infinity;
+    for (const shift of [-360, 0, 360]) {
+      const p = latLngToScreen(lat, lng + shift);
+      if (subPathOpen) {
+        const dx = Math.abs(p.x - lastX);
+        if (dx < bestDx) { bestDx = dx; bestP = p; }
+      } else {
+        // First point: just pick the wrap that puts it on screen or closest
+        const p2 = p;
+        const dx = Math.abs(p2.x - w/2);
+        if (dx < bestDx) { bestDx = dx; bestP = p2; }
+      }
+    }
+
+    if (!subPathOpen) {
+      ctx.beginPath();
+      ctx.moveTo(bestP.x, bestP.y);
+      subPathOpen = true;
+    } else {
+      if (bestDx > w * 0.6) {
+        // Big jump = wrap, start new sub-path
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(bestP.x, bestP.y);
+      } else {
+        ctx.lineTo(bestP.x, bestP.y);
+      }
+    }
+    lastX = bestP.x;
+    lastY = bestP.y;
+  }
+  if (subPathOpen) ctx.stroke();
+}
+
+function drawLocationMarker(ctx, w, h, isDark) {
+  if (!currentLocation) return;
+  const p = latLngToScreen(currentLocation.lat, currentLocation.lng);
+  if (p.x < -40 || p.x > w + 40 || p.y < -40 || p.y > h + 40) return;
+
+  // Pulse
+  const t = ((Date.now() % 2200) / 2200);
+  const pulseR = 6 + t * 18;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, pulseR, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(168,85,247,${0.35 * (1 - t)})`;
+  ctx.fill();
+
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+
+  // Inner dot
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#a855f7';
+  ctx.fill();
+
+  // Label box
+  if (currentLocation.name) {
+    ctx.font = '600 11px Inter, sans-serif';
+    const text = currentLocation.name;
+    const tw = ctx.measureText(text).width;
+    const padX = 8, padY = 5;
+    const boxW = tw + padX * 2;
+    const boxH = 22;
+    let bx = p.x - boxW / 2;
+    let by = p.y + 14;
+    if (bx < 4) bx = 4;
+    if (bx + boxW > w - 4) bx = w - boxW - 4;
+    if (by + boxH > h - 4) by = p.y - boxH - 8;
+
+    // Background
+    ctx.fillStyle = isDark ? 'rgba(20,12,38,0.92)' : 'rgba(255,255,255,0.95)';
+    roundRect(ctx, bx, by, boxW, boxH, 8);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(168,85,247,0.5)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Text
+    ctx.fillStyle = isDark ? '#fff' : '#3a2858';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, bx + boxW / 2, by + boxH / 2 + 0.5);
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// ============================================================
+//  CANVAS MAP — pan/zoom (with animation)
+// ============================================================
+function panTo(lat, lng, newZoom) {
+  const targetZoom = (typeof newZoom === 'number') ? newZoom : canvasMap.zoom;
+  const fromLat = canvasMap.centerLat;
+  const fromLng = canvasMap.centerLng;
+  const fromZoom = canvasMap.zoom;
+  const start = performance.now();
+  const dur = 800;
+
+  function step(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const e = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    canvasMap.centerLat = fromLat + (lat - fromLat) * e;
+    canvasMap.centerLng = fromLng + (lng - fromLng) * e;
+    canvasMap.zoom = fromZoom + (targetZoom - fromZoom) * e;
+    requestRender();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function setZoom(newZoom) {
+  newZoom = Math.max(canvasMap.minZoom, Math.min(canvasMap.maxZoom, newZoom));
+  canvasMap.zoom = newZoom;
+  requestRender();
+}
+
+// ============================================================
+//  CANVAS MAP — input handlers
+// ============================================================
+function getCanvasPoint(clientX, clientY) {
+  const rect = canvasMap.canvas.getBoundingClientRect();
+  return { x: clientX - rect.left, y: clientY - rect.top };
+}
+
+function onPointerDown(x, y) {
+  hideClickTooltip();
+  canvasMap.panning = {
+    startX: x, startY: y,
+    startLng: canvasMap.centerLng, startLat: canvasMap.centerLat,
+    moved: false
+  };
+  canvasMap.canvas.classList.add('dragging');
+}
+
+function onPointerMove(x, y) {
+  if (!canvasMap.panning) return;
+  const dx = x - canvasMap.panning.startX;
+  const dy = y - canvasMap.panning.startY;
+  if (Math.abs(dx) + Math.abs(dy) > 3) canvasMap.panning.moved = true;
+  const bs = canvasMap.baseScale * canvasMap.zoom;
+  canvasMap.centerLng = canvasMap.panning.startLng - dx / bs;
+  canvasMap.centerLat = canvasMap.panning.startLat + dy / bs;
+  // Clamp latitude to avoid pole wrap
+  canvasMap.centerLat = Math.max(-72, Math.min(72, canvasMap.centerLat));
+  requestRender();
+}
+
+function onPointerUp(x, y, isTouch) {
+  canvasMap.canvas.classList.remove('dragging');
+  if (canvasMap.panning && !canvasMap.panning.moved && !isAnimating) {
+    const ll = screenToLatLng(x, y);
+    onMapClick(ll);
+  }
+  canvasMap.panning = null;
+}
+
+function onTouchStart(e) {
+  if (e.touches.length === 1) {
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = getCanvasPoint(t.clientX, t.clientY);
+    onPointerDown(p.x, p.y);
+  } else if (e.touches.length === 2) {
+    e.preventDefault();
+    canvasMap.panning = null;
+    const t1 = e.touches[0], t2 = e.touches[1];
+    const p1 = getCanvasPoint(t1.clientX, t1.clientY);
+    const p2 = getCanvasPoint(t2.clientX, t2.clientY);
+    canvasMap.pinching = {
+      startDist: Math.hypot(p2.x - p1.x, p2.y - p1.y),
+      startZoom: canvasMap.zoom,
+      midX: (p1.x + p2.x) / 2,
+      midY: (p1.y + p2.y) / 2
+    };
+  }
+}
+
+function onTouchMove(e) {
+  if (e.touches.length === 1 && canvasMap.panning) {
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = getCanvasPoint(t.clientX, t.clientY);
+    onPointerMove(p.x, p.y);
+  } else if (e.touches.length === 2 && canvasMap.pinching) {
+    e.preventDefault();
+    const t1 = e.touches[0], t2 = e.touches[1];
+    const p1 = getCanvasPoint(t1.clientX, t1.clientY);
+    const p2 = getCanvasPoint(t2.clientX, t2.clientY);
+    const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    const scale = dist / canvasMap.pinching.startDist;
+    const newZoom = Math.max(canvasMap.minZoom, Math.min(canvasMap.maxZoom, canvasMap.pinching.startZoom * scale));
+    canvasMap.zoom = newZoom;
+    requestRender();
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.touches.length === 0) {
+    const t = e.changedTouches[0];
+    if (t) {
+      const p = getCanvasPoint(t.clientX, t.clientY);
+      onPointerUp(p.x, p.y, true);
+    }
+    canvasMap.pinching = null;
+  } else if (e.touches.length === 1) {
+    // Went from 2 fingers to 1: reset pan start to remaining finger
+    canvasMap.pinching = null;
+    const t = e.touches[0];
+    const p = getCanvasPoint(t.clientX, t.clientY);
+    onPointerDown(p.x, p.y);
+  }
+}
+
+function onMouseDown(e) {
+  e.preventDefault();
+  const p = getCanvasPoint(e.clientX, e.clientY);
+  onPointerDown(p.x, p.y);
+}
+
+function onMouseMove(e) {
+  if (!canvasMap.panning) return;
+  const p = getCanvasPoint(e.clientX, e.clientY);
+  onPointerMove(p.x, p.y);
+}
+
+function onMouseUp(e) {
+  const p = getCanvasPoint(e.clientX, e.clientY);
+  onPointerUp(p.x, p.y, false);
+}
+
+function onWheel(e) {
+  e.preventDefault();
+  const p = getCanvasPoint(e.clientX, e.clientY);
+  const before = screenToLatLng(p.x, p.y);
+  const factor = e.deltaY < 0 ? 1.18 : 1 / 1.18;
+  const newZoom = Math.max(canvasMap.minZoom, Math.min(canvasMap.maxZoom, canvasMap.zoom * factor));
+  canvasMap.zoom = newZoom;
+  const after = screenToLatLng(p.x, p.y);
+  canvasMap.centerLng += (before.lng - after.lng);
+  canvasMap.centerLat += (before.lat - after.lat);
+  canvasMap.centerLat = Math.max(-72, Math.min(72, canvasMap.centerLat));
+  requestRender();
+}
+
+// ============================================================
+//  CANVAS MAP — init + resize
+// ============================================================
+function resizeCanvas() {
+  const c = canvasMap.canvas;
+  if (!c) return;
+  canvasMap.dpr = window.devicePixelRatio || 1;
+  const rect = c.getBoundingClientRect();
+  c.width  = Math.max(1, Math.floor(rect.width  * canvasMap.dpr));
+  c.height = Math.max(1, Math.floor(rect.height * canvasMap.dpr));
+  canvasMap.width  = rect.width;
+  canvasMap.height = rect.height;
+  // baseScale: how many CSS px per degree at zoom=1 — fit 360° horizontally
+  canvasMap.baseScale = rect.width / 360;
+}
+
 function initMap() {
   try {
-    map = L.map('map', {
-      center: [25, 10],
-      zoom: 2,
-      minZoom: 2,
-      maxZoom: 6,
-      worldCopyJump: true,
-      zoomControl: false,
-      attributionControl: true,
-      fadeAnimation: true,
-      zoomAnimation: true,
-      tap: true,              // Required for touch devices (iOS/Android)
-      touchZoom: true,
-      dragging: true,
-      zoomSnap: 0.25,
-      wheelDebounceTime: 40
+    canvasMap.canvas = document.getElementById('customMap');
+    canvasMap.ctx = canvasMap.canvas.getContext('2d');
+    resizeCanvas();
+
+    // Input events
+    canvasMap.canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvasMap.canvas.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    canvasMap.canvas.addEventListener('touchend',   onTouchEnd);
+    canvasMap.canvas.addEventListener('mousedown',  onMouseDown);
+    canvasMap.canvas.addEventListener('mousemove',  onMouseMove);
+    canvasMap.canvas.addEventListener('mouseup',    onMouseUp);
+    canvasMap.canvas.addEventListener('mouseleave', onMouseUp);
+    canvasMap.canvas.addEventListener('wheel',      onWheel, { passive: false });
+
+    // Zoom controls
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      setZoom(canvasMap.zoom * 1.5);
     });
-
-    updateTiles();
-
-    L.control.attribution({
-      position: 'bottomright',
-      prefix: ''
-    }).addTo(map);
-
-    // Custom zoom controls
-    document.getElementById('zoomIn').addEventListener('click', () => map.zoomIn());
-    document.getElementById('zoomOut').addEventListener('click', () => map.zoomOut());
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      setZoom(canvasMap.zoom / 1.5);
+    });
     document.getElementById('zoomReset').addEventListener('click', () => {
-      map.flyTo([25, 10], 2, { duration: 0.8 });
+      panTo(25, 10, 1);
     });
 
-    // Force Leaflet to recalculate container size.
-    // Critical on mobile: map-card has scaleIn animation (0.7s) that
-    // changes container dimensions; Leaflet needs invalidateSize after it.
-    const recalc = () => { if (map) map.invalidateSize(); };
-    setTimeout(recalc, 50);
-    setTimeout(recalc, 200);
-    setTimeout(recalc, 800);   // after scaleIn animation
-    setTimeout(recalc, 1500);  // safety net
-    window.addEventListener('orientationchange', () => setTimeout(recalc, 300));
-    window.addEventListener('resize', () => setTimeout(recalc, 100));
+    // Resize observer (reacts to layout / orientation changes immediately)
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => { resizeCanvas(); requestRender(); });
+      ro.observe(canvasMap.canvas);
+    } else {
+      window.addEventListener('resize', () => { resizeCanvas(); requestRender(); });
+    }
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => { resizeCanvas(); requestRender(); }, 200);
+    });
 
-    // Hide loader ASAP (don't wait for whenReady — it can hang on mobile)
+    // Hide loader — canvas has no async work, hide quickly
     let loaderHidden = false;
     const hideLoader = () => {
       if (loaderHidden) return;
@@ -1765,71 +2244,21 @@ function initMap() {
       const el = document.getElementById('mapLoader');
       if (el) el.classList.add('hidden');
     };
-    // Hide after a short delay (let first paint happen)
-    setTimeout(hideLoader, 300);
-    // Also hide on map ready (in case it fires later)
-    map.whenReady(() => setTimeout(hideLoader, 100));
-    // And on first tile batch loaded
-    if (tileLayer) {
-      tileLayer.on('load', () => setTimeout(hideLoader, 100));
-    }
-    // Ultimate safety fallback
-    setTimeout(hideLoader, 3000);
+    setTimeout(hideLoader, 200);
+    setTimeout(hideLoader, 2000); // safety
 
-    // Map click → find nearest line
-    map.on('click', e => {
-      if (isAnimating) return;
-      onMapClick(e.latlng);
-    });
-
-    // Close tooltip on map move
-    map.on('movestart', () => {
-      hideClickTooltip();
-    });
+    // Initial render
+    requestRender();
   } catch (err) {
-    // If Leaflet fails to initialize, show error and still hide loader
     console.error('Map init error:', err);
     const loader = document.getElementById('mapLoader');
     if (loader) {
-      loader.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">⚠️ Не удалось загрузить карту.<br>Проверьте подключение к интернету и обновите страницу.</div>';
+      loader.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:13px;">⚠️ ' +
+        (lang === 'ru' ? 'Не удалось инициализировать карту.' : 'Failed to initialize map.') +
+        '</div>';
       setTimeout(() => loader.classList.add('hidden'), 3000);
     }
   }
-}
-
-function updateTiles() {
-  if (tileLayer) {
-    map.removeLayer(tileLayer);
-  }
-  const url = currentTheme === 'dark' ? TILE_DARK : TILE_LIGHT;
-  tileLayer = L.tileLayer(url, {
-    subdomains: 'abcd',
-    maxZoom: 19,
-    attribution: ATTRIBUTION,
-    className: 'map-tiles',
-    crossOrigin: true,
-    errorTileUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" fill="%23f0e6f0"/></svg>'
-  }).addTo(map);
-  tileLayer.bringToBack();
-
-  // Show fallback message if too many tile errors
-  let errorCount = 0;
-  tileLayer.on('tileerror', () => {
-    errorCount++;
-    if (errorCount > 5 && map) {
-      const loader = document.getElementById('mapLoader');
-      if (loader && !loader.classList.contains('hidden') === false) return;
-      // Only show once
-      if (document.getElementById('tile-error-msg')) return;
-      const msg = document.createElement('div');
-      msg.id = 'tile-error-msg';
-      msg.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:15;padding:14px 20px;background:var(--glass-bg-strong);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;font-size:12px;color:var(--text-secondary);text-align:center;max-width:280px;line-height:1.5;box-shadow:0 8px 24px var(--card-shadow);';
-      msg.innerHTML = lang === 'ru'
-        ? '⚠️ Тайлы карты не загружаются.<br>Проверьте интернет или VPN.'
-        : '⚠️ Map tiles failed to load.<br>Check your internet or VPN.';
-      document.getElementById('mapCard').appendChild(msg);
-    }
-  });
 }
 
 // ============================================================
@@ -1841,7 +2270,7 @@ function applyTheme(theme) {
   localStorage.setItem('map-theme', theme);
   updateThemeIcon();
   if (typeof updateParticleColors === 'function') updateParticleColors();
-  if (map) updateTiles();
+  requestRender();
 }
 
 function updateThemeIcon() {
@@ -1894,16 +2323,11 @@ function updateLegendUI() {
 function togglePlanet(pid) {
   visiblePlanets[pid] = !visiblePlanets[pid];
   if (planetGroups[pid]) {
-    if (visiblePlanets[pid]) {
-      planetGroups[pid].addTo(map);
-      // Re-trigger animation
-      setTimeout(() => animateGroup(planetGroups[pid]), 50);
-    } else {
-      map.removeLayer(planetGroups[pid]);
-    }
+    planetGroups[pid].visible = visiblePlanets[pid];
   }
   updateLegendUI();
   hideClickTooltip();
+  requestRender();
 }
 
 function toggleAllPlanets() {
@@ -1912,51 +2336,27 @@ function toggleAllPlanets() {
   PLANETS.forEach(p => {
     visiblePlanets[p.id] = newState;
     if (planetGroups[p.id]) {
-      if (newState) {
-        planetGroups[p.id].addTo(map);
-        setTimeout(() => animateGroup(planetGroups[p.id]), 50);
-      } else {
-        map.removeLayer(planetGroups[p.id]);
-      }
+      planetGroups[p.id].visible = newState;
     }
   });
   updateLegendUI();
   hideClickTooltip();
-}
-
-function animateGroup(group) {
-  // Re-apply className to re-trigger CSS animation
-  group.eachLayer(layer => {
-    const el = layer.getElement();
-    if (el && el.tagName === 'path') {
-      const cls = el.getAttribute('class') || '';
-      el.setAttribute('class', '');
-      // Force reflow
-      void el.getBoundingClientRect();
-      el.setAttribute('class', cls);
-    }
-  });
+  requestRender();
 }
 
 // ============================================================
-//  BUILD MAP (compute & draw lines)
+//  BUILD MAP (compute lines from birth date)
 // ============================================================
 function buildMap(birthDate) {
   isAnimating = true;
   hideClickTooltip();
 
-  // Remove existing groups
-  for (const pid in planetGroups) {
-    map.removeLayer(planetGroups[pid]);
-    planetGroups[pid] = null;
-  }
+  planetGroups = {};
 
   PLANETS.forEach((planet, pIdx) => {
     if (!visiblePlanets[planet.id]) return;
 
     const lines = getPlanetLines(planet, birthDate);
-    const group = L.featureGroup().addTo(map);
-
     const lineConfigs = [
       { type: 'MC',  points: generateMeridian(lines.L_MC, 80) },
       { type: 'IC',  points: generateMeridian(lines.L_MC + 180, 80) },
@@ -1964,63 +2364,28 @@ function buildMap(birthDate) {
       { type: 'DS',  points: generateGreatCircle(lines.L_MC, lines.Dec, 'DS',  140) }
     ];
 
-    lineConfigs.forEach(cfg => {
-      const polyline = L.polyline(cfg.points, {
-        color: planet.color,
-        weight: 2,
-        opacity: 0.55,
-        smoothFactor: 1.5,
-        lineCap: 'round',
-        lineJoin: 'round',
-        className: 'astro-line planet-' + pIdx + ' line-' + cfg.type.toLowerCase(),
-        interactive: true
-      });
-
-      polyline.metadata = {
-        planetId: planet.id,
-        lineType: cfg.type,
+    planetGroups[planet.id] = {
+      color: planet.color,
+      visible: true,
+      lines: lineConfigs.map(cfg => ({
+        type: cfg.type,
         points: cfg.points
-      };
-
-      polyline.on('mouseover', e => {
-        const layer = e.target;
-        layer.setStyle({ weight: 3.5, opacity: 1 });
-        const tip = document.getElementById('clickTooltip');
-        showLineTooltip(tip, layer.metadata, e.originalEvent);
-      });
-
-      polyline.on('mousemove', e => {
-        const tip = document.getElementById('clickTooltip');
-        if (tip.classList.contains('show')) {
-          positionClickTooltip(tip, e.originalEvent);
-        }
-      });
-
-      polyline.on('mouseout', e => {
-        e.target.setStyle({ weight: 2, opacity: 0.55 });
-        hideClickTooltip();
-      });
-
-      polyline.addTo(group);
-    });
-
-    planetGroups[planet.id] = group;
+      }))
+    };
   });
 
   // Hide hint after first build
   const hint = document.getElementById('mapHint');
   if (hint) hint.style.display = 'none';
 
-  setTimeout(() => { isAnimating = false; }, 2000);
+  setTimeout(() => { isAnimating = false; }, 800);
+  requestRender();
 }
 
 // ============================================================
 // ============================================================
 //  GEOCODING (Nominatim)
 // ============================================================
-let countryMarker = null;
-let currentLocation = null; // { lat, lng, name }
-
 async function geocode(query) {
   if (!query || !query.trim()) return null;
   const langParam = lang === 'ru' ? 'ru' : 'en';
@@ -2042,22 +2407,8 @@ async function geocode(query) {
 }
 
 function placeCountryMarker(latlng, label) {
-  if (countryMarker) {
-    map.removeLayer(countryMarker);
-    countryMarker = null;
-  }
-  const icon = L.divIcon({
-    className: 'country-marker',
-    iconSize: [28, 28],
-    iconAnchor: [14, 14],
-    html: '<div class="cm-pulse"></div><div class="cm-dot"></div>'
-  });
-  countryMarker = L.marker(latlng, { icon, interactive: false }).addTo(map);
-  countryMarker.bindTooltip(label, {
-    className: 'country-tooltip',
-    direction: 'top',
-    offset: [0, -10]
-  });
+  currentLocation = { lat: latlng[0], lng: latlng[1], name: label };
+  requestRender();
 }
 
 // ============================================================
@@ -2068,10 +2419,10 @@ function findLinesNear(latlng, thresholdDeg) {
   const candidates = [];
   for (const pid in planetGroups) {
     if (!visiblePlanets[pid]) continue;
-    const group = planetGroups[pid];
-    if (!map.hasLayer(group)) continue;
-    group.eachLayer(layer => {
-      const pts = layer.metadata.points;
+    const grp = planetGroups[pid];
+    if (!grp) continue;
+    for (const line of grp.lines) {
+      const pts = line.points;
       let minDist = Infinity;
       const step = Math.max(1, Math.floor(pts.length / 50));
       for (let i = 0; i < pts.length - 1; i += step) {
@@ -2082,12 +2433,12 @@ function findLinesNear(latlng, thresholdDeg) {
       }
       if (minDist < thresholdDeg) {
         candidates.push({
-          planetId: layer.metadata.planetId,
-          lineType: layer.metadata.lineType,
+          planetId: pid,
+          lineType: line.type,
           dist: minDist
         });
       }
-    });
+    }
   }
   candidates.sort((a, b) => a.dist - b.dist);
   return candidates;
@@ -2189,21 +2540,18 @@ function showDestinyLineTooltip(tipEl, planet, lineType) {
 
 function positionClickTooltipOnMap(tipEl, latlng) {
   if (!latlng) return;
-  const mapEl = document.getElementById('map');
+  const mapEl = document.getElementById('customMap');
   const rect = mapEl.getBoundingClientRect();
-  const point = map.latLngToContainerPoint(latlng);
-  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  const p = latLngToScreen(latlng.lat, latlng.lng);
+  const fakeEvt = { clientX: rect.left + p.x, clientY: rect.top + p.y };
   positionClickTooltip(tipEl, fakeEvt);
 }
 
 function clearDestiny() {
   document.getElementById('destinyCard').style.display = 'none';
-  if (countryMarker) {
-    map.removeLayer(countryMarker);
-    countryMarker = null;
-  }
   currentLocation = null;
   hideClickTooltip();
+  requestRender();
 }
 
 // ============================================================
@@ -2216,11 +2564,11 @@ function onMapClick(latlng) {
 
   for (const pid in planetGroups) {
     if (!visiblePlanets[pid]) continue;
-    const group = planetGroups[pid];
-    if (!map.hasLayer(group)) continue;
+    const grp = planetGroups[pid];
+    if (!grp) continue;
 
-    group.eachLayer(layer => {
-      const pts = layer.metadata.points;
+    for (const line of grp.lines) {
+      const pts = line.points;
       let minDist = Infinity;
       // Sample points for performance
       const step = Math.max(1, Math.floor(pts.length / 40));
@@ -2232,12 +2580,12 @@ function onMapClick(latlng) {
       }
       if (minDist < threshold) {
         candidates.push({
-          planetId: layer.metadata.planetId,
-          lineType: layer.metadata.lineType,
+          planetId: pid,
+          lineType: line.type,
           dist: minDist
         });
       }
-    });
+    }
   }
 
   if (candidates.length === 0) {
@@ -2311,11 +2659,11 @@ function showClickTooltipMulti(candidates, latlng) {
   tipEl.classList.add('show');
 
   // Position in center of map if no event
-  const mapEl = document.getElementById('map');
+  const mapEl = document.getElementById('customMap');
   const rect = mapEl.getBoundingClientRect();
   // Use the actual click position relative to map
-  const point = map.latLngToContainerPoint(latlng);
-  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  const p = latLngToScreen(latlng.lat, latlng.lng);
+  const fakeEvt = { clientX: rect.left + p.x, clientY: rect.top + p.y };
   positionClickTooltip(tipEl, fakeEvt);
 
   const closeBtn = tipEl.querySelector('.ct-close');
@@ -2341,10 +2689,10 @@ function showClickTooltipNoInfluence(latlng) {
     <div class="ct-text">${lang === 'ru' ? 'В этой точке нет активных планетных линий в пределах 15°' : 'No active planetary lines within 15° at this point'}</div>
   `;
   tipEl.classList.add('show');
-  const mapEl = document.getElementById('map');
+  const mapEl = document.getElementById('customMap');
   const rect = mapEl.getBoundingClientRect();
-  const point = map.latLngToContainerPoint(latlng);
-  const fakeEvt = { clientX: rect.left + point.x, clientY: rect.top + point.y };
+  const p = latLngToScreen(latlng.lat, latlng.lng);
+  const fakeEvt = { clientX: rect.left + p.x, clientY: rect.top + p.y };
   positionClickTooltip(tipEl, fakeEvt);
 
   const closeBtn = tipEl.querySelector('.ct-close');
@@ -2357,7 +2705,7 @@ function showClickTooltipNoInfluence(latlng) {
 }
 
 function positionClickTooltip(tipEl, evt) {
-  const mapEl = document.getElementById('map');
+  const mapEl = document.getElementById('customMap');
   const mapRect = mapEl.getBoundingClientRect();
   const x = evt.clientX - mapRect.left;
   const y = evt.clientY - mapRect.top;
@@ -2664,9 +3012,8 @@ document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       initMap();
-      // Extra invalidateSize after Leaflet is ready + CSS animations
-      setTimeout(() => { if (map) map.invalidateSize(); }, 300);
-      setTimeout(() => { if (map) map.invalidateSize(); }, 900);
+      // Re-trigger render after CSS scaleIn animation finishes
+      setTimeout(requestRender, 700);
     });
   });
   applyLang();
@@ -2785,15 +3132,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const candidates = findLinesNear({ lat: loc.lat, lng: loc.lng }, 15);
         renderDestiny(loc, candidates);
         // Pan/zoom to the place
-        map.flyTo([loc.lat, loc.lng], Math.max(map.getZoom(), 4), { duration: 1.2 });
+        const targetZoom = Math.max(canvasMap.zoom, 2.5);
+        panTo(loc.lat, loc.lng, targetZoom);
         // Scroll destiny card into view
         setTimeout(() => {
           const card = document.getElementById('destinyCard');
           if (card.style.display !== 'none') {
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        }, 1300);
-      }, 2200);
+        }, 1000);
+      }, 900);
     } else {
       clearDestiny();
     }
