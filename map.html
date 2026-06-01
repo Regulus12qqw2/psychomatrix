@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Локационная астрология — Карта планетных линий по дате рождения</title>
   <meta name="description" content="Постройте интерактивную карту локаций по дате рождения. Линии планет MC, IC, ASC, DS на карте мира. Локационная астрология онлайн — бесплатный расчёт.">
   <meta name="keywords" content="локационная астрология, astrolocality, карта планет, линии MC IC ASC DS, астро*карта, локации планет">
@@ -488,11 +491,13 @@ body {
   background: var(--bg-mid1);
   z-index: 1;
   width: 100%; height: 100%;
-  /* Critical for mobile touch gestures on the map */
-  touch-action: none;
+  min-width: 100px; min-height: 100px;
+  /* NOTE: removed touch-action: none and user-select: none here.
+     Leaflet manages touch behavior itself since 1.0 — having these
+     on the container can cause iOS Safari (especially on GitHub Pages
+     with aggressive cache) to render an empty/blank map canvas. */
+  -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* Leaflet container override for our rounded card */
@@ -501,7 +506,7 @@ body {
   background: var(--bg-mid1);
   outline: none;
   width: 100%; height: 100%;
-  touch-action: none;
+  /* touch-action is set on the leaflet pane by Leaflet itself, not here */
 }
 .leaflet-container a { color: var(--accent-lilac-dark); }
 [data-theme="dark"] .leaflet-container a { color: var(--accent-lilac); }
@@ -564,7 +569,15 @@ body {
 .map-legend-toggle:hover { background: var(--map-zoom-btn-hover); }
 .map-legend-toggle svg { width: 14px; height: 14px; color: var(--text-secondary); }
 @media (max-width: 768px) {
-  .map-legend-toggle { display: inline-flex; }
+  .map-legend-toggle {
+    display: inline-flex;
+    top: 12px; right: 12px;
+    padding: 9px 16px;
+    font-size: 13px;
+    min-height: 38px;
+    box-shadow: 0 4px 14px rgba(200,162,211,0.25), 0 0 0 1px rgba(200,162,211,0.15);
+  }
+  .map-legend-toggle svg { width: 16px; height: 16px; }
 }
 
 /* Legend panel */
@@ -580,15 +593,25 @@ body {
   .map-legend { top: 16px; right: 16px; padding: 16px; width: 260px; }
 }
 @media (max-width: 768px) {
+  /* Mobile: legend is a bottom-sheet that is FULLY hidden by default.
+     The map is never covered. User taps the toggle to open it.
+     max-height is capped below the map-card height (45-48dvh) so even
+     when expanded it cannot fully cover the map. */
   .map-legend {
     top: auto; bottom: 0; right: 0; left: 0; width: 100%;
-    max-height: 65vh;
+    max-height: 42vh;
     border-radius: 20px 20px 0 0;
-    transform: translateY(calc(100% - 56px));
+    transform: translateY(110%);
     transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
     padding: 12px 14px 16px;
+    z-index: 50;
+    display: flex; flex-direction: column;
   }
   .map-legend.expanded { transform: translateY(0); }
+  /* The legend's fadeUp animation can override the transform briefly on
+     initial load. We keep it but with a much shorter transform offset
+     so it doesn't conflict with the closed state. */
+  .map-legend { animation: none; }
 }
 
 .legend-header {
@@ -689,9 +712,31 @@ body {
   background: var(--map-divider);
   border-radius: 2px;
   margin: 0 auto 10px;
+  cursor: pointer;
 }
 @media (max-width: 768px) {
   .legend-drag-handle { display: block; }
+}
+
+/* Close button — only on mobile */
+.legend-close {
+  display: none;
+  width: 26px; height: 26px;
+  background: var(--map-row-hover);
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  padding: 0;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.legend-close:hover { background: var(--accent-lilac-light); color: var(--text-primary); }
+.legend-close:active { transform: scale(0.9); }
+.legend-close svg { width: 12px; height: 12px; }
+.legend-header-actions { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 768px) {
+  .legend-close { display: inline-flex; }
 }
 
 /* Map loader */
@@ -1182,7 +1227,7 @@ body {
   .map-zoom-btn { width: 34px; height: 34px; border-radius: 9px; }
   .map-zoom-btn svg { width: 16px; height: 16px; }
   .map-legend-toggle { top: 10px; right: 10px; padding: 7px 12px; font-size: 11px; }
-  .map-legend { padding: 10px 12px 14px; }
+  .map-legend { padding: 10px 12px 14px; max-height: 38vh; }
   .map-legend-toggle { display: inline-flex; }
   .map-hint { font-size: 10px; padding: 7px 12px; bottom: 12px; max-width: 90%; white-space: normal; text-align: center; }
 
@@ -1345,10 +1390,15 @@ body {
 
     <!-- Legend -->
     <div class="map-legend glass" id="mapLegend">
-      <div class="legend-drag-handle"></div>
+      <div class="legend-drag-handle" id="legendDragHandle" aria-label="Close legend"></div>
       <div class="legend-header">
         <span class="legend-title" id="legendTitle">Планеты</span>
-        <button class="legend-action" id="legendToggleAll">Все</button>
+        <div class="legend-header-actions">
+          <button class="legend-action" id="legendToggleAll">Все</button>
+          <button class="legend-close" id="legendClose" aria-label="Close legend">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <div class="legend-list" id="legendList"></div>
       <div class="legend-types">
@@ -1721,6 +1771,34 @@ function pointToSegmentDistance(p3, a3, b3) {
 // ============================================================
 //  MAP INITIALIZATION
 // ============================================================
+
+/**
+ * Compute and apply the map-card height based on the actual visible
+ * viewport. This is the single source of truth for sizing on mobile
+ * — we don't rely on `dvh`/`vh` alone because:
+ *  - on iOS Safari, dvh is ignored when the URL bar is animating
+ *  - GitHub Pages + aggressive mobile cache can serve a page state
+ *    where CSS hasn't applied yet
+ * Returns the computed pixel height.
+ */
+function applyMapHeight() {
+  const card = document.getElementById('mapCard');
+  if (!card) return 0;
+  const w = window.innerWidth;
+  // viewportHeight = реальная высота viewport на мобиле (без URL-бара, если скрыт)
+  const vh = window.innerHeight;
+  let h;
+  if (w < 640) {
+    h = Math.max(280, Math.min(vh * 0.48, 480));
+  } else if (w < 1400) {
+    h = Math.max(380, Math.min(vh * 0.55, 700));
+  } else {
+    h = Math.max(480, Math.min(vh * 0.60, 820));
+  }
+  card.style.height = h + 'px';
+  return h;
+}
+
 function initMap() {
   // Pre-check: if Leaflet never loaded, show a clear error
   if (typeof L === 'undefined') {
@@ -1734,6 +1812,13 @@ function initMap() {
     return;
   }
   try {
+    // 1) Lock down an explicit pixel height BEFORE Leaflet measures the
+    //    container. Without this step, on iOS Safari + GitHub Pages the
+    //    container can read as 0x0 (URL bar still settling, font swap
+    //    reflow, cached HTML served without CSS, etc.) and the map
+    //    appears completely blank.
+    applyMapHeight();
+
     map = L.map('map', {
       center: [25, 10],
       zoom: 2,
@@ -1748,7 +1833,9 @@ function initMap() {
       touchZoom: true,
       dragging: true,
       zoomSnap: 0.25,
-      wheelDebounceTime: 40
+      wheelDebounceTime: 40,
+      // Force Leaflet to redraw after creation
+      preferCanvas: false
     });
 
     updateTiles();
@@ -1768,15 +1855,45 @@ function initMap() {
     // Force Leaflet to recalculate container size.
     // Critical on mobile: container dimensions change due to URL bar
     // show/hide, orientation changes, and soft keyboard.
-    const recalc = () => { if (map) map.invalidateSize(); };
+    const recalc = () => {
+      if (!map) return;
+      applyMapHeight();
+      map.invalidateSize();
+    };
+    // Multiple recalcs cover different settling times on iOS Safari.
     setTimeout(recalc, 50);
     setTimeout(recalc, 200);
     setTimeout(recalc, 500);
     setTimeout(recalc, 1500);  // safety net
 
-    window.addEventListener('orientationchange', () => setTimeout(recalc, 400));
-    window.addEventListener('resize', () => setTimeout(recalc, 150));
-    window.addEventListener('scroll', () => { if (map) map.invalidateSize(); }, { passive: true });
+    window.addEventListener('orientationchange', () => {
+      applyMapHeight();
+      setTimeout(recalc, 300);
+      setTimeout(recalc, 800);
+    });
+    window.addEventListener('resize', () => {
+      applyMapHeight();
+      setTimeout(recalc, 150);
+    });
+
+    // bfcache: iOS Safari keeps the page in memory and restores it.
+    // Without invalidateSize on pageshow the map is restored with its
+    // old (wrong) size and shows blank. e.persisted === true means
+    // restored from bfcache.
+    window.addEventListener('pageshow', e => {
+      applyMapHeight();
+      setTimeout(recalc, 50);
+      setTimeout(recalc, 300);
+      setTimeout(recalc, 800);
+    });
+
+    // Tab/app switch — iOS sometimes tears down the WebGL/canvas state
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        applyMapHeight();
+        setTimeout(recalc, 100);
+      }
+    });
 
     // ResizeObserver: the most reliable way to detect container size changes.
     // Covers soft keyboard, URL bar toggle, split-screen, fold/unfold.
@@ -1804,7 +1921,10 @@ function initMap() {
     // Hide after a short delay (let first paint happen)
     setTimeout(hideLoader, 300);
     // Also hide on map ready (in case it fires later)
-    map.whenReady(() => setTimeout(hideLoader, 100));
+    map.whenReady(() => {
+      map.invalidateSize();
+      setTimeout(hideLoader, 100);
+    });
     // And on first tile batch loaded
     if (tileLayer) {
       tileLayer.on('load', () => setTimeout(hideLoader, 100));
@@ -2695,36 +2815,69 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize all planets visible
   PLANETS.forEach(p => { visiblePlanets[p.id] = true; });
 
+  // Lock down the map height IMMEDIATELY (before any animation/reflow
+  // has had a chance to mis-measure the container on iOS Safari).
+  applyMapHeight();
+
   // Init map after layout is fully calculated.
   // On mobile, skip animation delay — map-card has animation:none
   // so dimensions are stable immediately.
+  // Use double-rAF to be sure the first paint has happened.
   requestAnimationFrame(() => {
-    initMap();
-    // Extra invalidateSize after Leaflet is ready
-    setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-    setTimeout(() => { if (map) map.invalidateSize(); }, 600);
-    setTimeout(() => { if (map) map.invalidateSize(); }, 1200);
+    requestAnimationFrame(() => {
+      initMap();
+      // Extra invalidateSize after Leaflet is ready
+      setTimeout(() => { if (map) { applyMapHeight(); map.invalidateSize(); } }, 200);
+      setTimeout(() => { if (map) { applyMapHeight(); map.invalidateSize(); } }, 600);
+      setTimeout(() => { if (map) { applyMapHeight(); map.invalidateSize(); } }, 1200);
+    });
+  });
+
+  // One final safety net: re-apply height + invalidateSize after the
+  // whole window is fully loaded (fonts, images, etc.).
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      applyMapHeight();
+      if (map) map.invalidateSize();
+    }, 100);
   });
   applyLang();
 
   // Legend toggle (mobile)
   const legendEl = document.getElementById('mapLegend');
   const legendToggleBtn = document.getElementById('legendToggle');
+  // Force initial closed state — guarantees the map is never covered
+  // regardless of CSS animation interference or saved state.
+  function syncLegendForViewport() {
+    if (window.innerWidth <= 768) {
+      legendEl.classList.remove('expanded');
+    }
+  }
+  syncLegendForViewport();
+  window.addEventListener('resize', syncLegendForViewport);
   legendToggleBtn.addEventListener('click', () => {
     legendEl.classList.toggle('expanded');
   });
+  // Close button inside the legend
+  const legendCloseBtn = document.getElementById('legendClose');
+  if (legendCloseBtn) {
+    legendCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      legendEl.classList.remove('expanded');
+    });
+  }
   // Click on collapsed legend header area expands it on mobile
   const legendHeader = legendEl.querySelector('.legend-header');
   legendHeader.addEventListener('click', e => {
     if (isMobile && !legendEl.classList.contains('expanded')) {
-      // Only expand if clicking outside the action button
-      if (!e.target.closest('.legend-action')) {
+      // Only expand if clicking outside the action/close button
+      if (!e.target.closest('.legend-action') && !e.target.closest('.legend-close')) {
         legendEl.classList.add('expanded');
       }
     }
   });
-  // Drag handle expand on mobile
-  const dragHandle = legendEl.querySelector('.legend-drag-handle');
+  // Drag handle expand/close on mobile
+  const dragHandle = document.getElementById('legendDragHandle');
   if (dragHandle) {
     dragHandle.addEventListener('click', () => {
       legendEl.classList.toggle('expanded');
