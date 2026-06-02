@@ -453,6 +453,17 @@ body {
 }
 .error-msg.show { max-height: 40px; opacity: 1; }
 
+/* Hint text below form rows — small muted note */
+.form-hint {
+  font-size: 10px; line-height: 1.45;
+  color: var(--text-muted);
+  margin-top: 8px; padding: 0 4px;
+  transition: color 0.3s;
+}
+@media (min-width: 640px) {
+  .form-hint { font-size: 11px; }
+}
+
 /* ===== Section label ===== */
 .section-label {
   font-size: 10px; font-weight: 600; color: var(--text-muted);
@@ -1355,17 +1366,23 @@ body {
         <label class="form-label" for="dateInput" id="dateLabel">Дата рождения</label>
         <input type="text" id="dateInput" placeholder="ДД.ММ.ГГГГ" maxlength="10" inputmode="numeric" class="form-input">
       </div>
-      <div class="form-row form-row-country">
-        <label class="form-label" for="countryInput" id="countryLabel">Страна</label>
-        <input type="text" id="countryInput" placeholder="Россия, Япония, США…" class="form-input">
+      <div class="form-row form-row-birthplace">
+        <label class="form-label" for="birthPlaceInput" id="birthPlaceLabel">Место рождения</label>
+        <input type="text" id="birthPlaceInput" placeholder="Город, страна" class="form-input" autocomplete="off">
+      </div>
+      <div class="form-row form-row-birthtime">
+        <label class="form-label" for="birthTimeInput" id="birthTimeLabel">Время рождения</label>
+        <input type="text" id="birthTimeInput" placeholder="ЧЧ:ММ" maxlength="5" inputmode="numeric" class="form-input">
       </div>
       <div class="form-row form-row-city">
-        <label class="form-label" for="cityInput" id="cityLabel">Город</label>
-        <input type="text" id="cityInput" placeholder="Москва, Токио, Нью-Йорк…" class="form-input">
+        <label class="form-label" for="cityInput" id="cityLabel">Город проживания</label>
+        <input type="text" id="cityInput" placeholder="Где живёте или хотите жить" class="form-input" autocomplete="off">
       </div>
+      <p class="form-hint" id="formHint">Время и место рождения уточняют расчёт. Если не знаете время — оставьте 12:00, линии будут приблизительными.</p>
       <button type="submit" class="form-btn" id="calcBtn">Построить карту</button>
       <div class="error-msg" id="errorMsg">Введите корректную дату в формате ДД.ММ.ГГГГ</div>
-      <div class="error-msg" id="geoErrorMsg">Страна или город не найдены</div>
+      <div class="error-msg" id="timeErrorMsg">Введите время в формате ЧЧ:ММ</div>
+      <div class="error-msg" id="geoErrorMsg">Место не найдено</div>
     </form>
   </div>
 
@@ -1483,14 +1500,18 @@ const T = {
     subtitle: 'Интерактивная карта планетных линий по дате рождения',
     dateLabel: 'Дата рождения',
     placeholder: 'ДД.ММ.ГГГГ',
-    countryLabel: 'Страна',
-    countryPlaceholder: 'Россия, Япония, США…',
-    cityLabel: 'Город',
-    cityPlaceholder: 'Москва, Токио, Нью-Йорк…',
+    birthPlaceLabel: 'Место рождения',
+    birthPlacePlaceholder: 'Город, страна',
+    birthTimeLabel: 'Время рождения',
+    birthTimePlaceholder: 'ЧЧ:ММ',
+    cityLabel: 'Город проживания',
+    cityPlaceholder: 'Где живёте или хотите жить',
+    formHint: 'Время и место рождения уточняют расчёт. Если не знаете время — оставьте 12:00, линии будут приблизительными.',
     calcBtn: 'Построить карту',
     calcBtnLoading: 'Поиск…',
     error: 'Введите корректную дату в формате ДД.ММ.ГГГГ',
-    geoError: 'Страна или город не найдены',
+    timeError: 'Введите время в формате ЧЧ:ММ',
+    geoError: 'Место не найдено',
     legendTitle: 'Планеты',
     legendAllOn: 'Все',
     legendAllOff: 'Скрыть',
@@ -1549,14 +1570,18 @@ const T = {
     subtitle: 'Interactive planetary lines map by birth date',
     dateLabel: 'Date of birth',
     placeholder: 'DD.MM.YYYY',
-    countryLabel: 'Country',
-    countryPlaceholder: 'Russia, Japan, USA…',
-    cityLabel: 'City',
-    cityPlaceholder: 'Moscow, Tokyo, New York…',
+    birthPlaceLabel: 'Place of birth',
+    birthPlacePlaceholder: 'City, country',
+    birthTimeLabel: 'Time of birth',
+    birthTimePlaceholder: 'HH:MM',
+    cityLabel: 'Current city',
+    cityPlaceholder: 'Where you live or want to live',
+    formHint: 'Time and place of birth refine the calculation. If you don\'t know the time, leave 12:00 — lines will be approximate.',
     calcBtn: 'Build map',
     calcBtnLoading: 'Searching…',
     error: 'Please enter a valid date in DD.MM.YYYY format',
-    geoError: 'Country or city not found',
+    timeError: 'Please enter a valid time in HH:MM format',
+    geoError: 'Place not found',
     legendTitle: 'Planets',
     legendAllOn: 'All',
     legendAllOff: 'Hide',
@@ -1671,16 +1696,47 @@ function getGMST(daysSinceJ2000) {
   return ((100.46 + 360.985647 * daysSinceJ2000) % 360 + 360) % 360;
 }
 
-function getPlanetLines(planet, birthDate) {
-  // Use noon UT, Greenwich as reference
-  const d = new Date(birthDate);
-  const noon = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0);
-  const days = (noon - J2000) / 86400000;
+function getPlanetLines(planet, birthDate, birthTime, birthLng) {
+  // birthDate: Date object (or "DD.MM.YYYY" string)
+  // birthTime: "HH:MM" string or empty (defaults to 12:00)
+  // birthLng:  longitude of birth place in degrees (east+) or null (→ Greenwich)
+  //
+  // We use solar time at the birth place (not political timezone):
+  //   1 hour = 15° of longitude.
+  // This is the correct astronomical reference — political DST/offsets
+  // would shift the chart by an entire house.
+  let yyyy, mm, dd;
+  if (birthDate instanceof Date) {
+    yyyy = birthDate.getFullYear();
+    mm = birthDate.getMonth() + 1;
+    dd = birthDate.getDate();
+  } else {
+    const parts = String(birthDate).split('.').map(Number);
+    dd = parts[0]; mm = parts[1]; yyyy = parts[2];
+  }
+
+  let hh = 12, mi = 0;
+  if (birthTime) {
+    const m = String(birthTime).match(/^(\d{1,2}):(\d{2})$/);
+    if (m) {
+      hh = +m[1]; mi = +m[2];
+      if (hh < 0 || hh > 23 || mi < 0 || mi > 59) { hh = 12; mi = 0; }
+    }
+  }
+
+  const lng = (typeof birthLng === 'number' && isFinite(birthLng)) ? birthLng : 0;
+  // Convert local solar time at birth place to UT.
+  // UT = local - (lng/15) hours. East longitude → local is ahead of UT → subtract.
+  const tzOffsetMs = (lng / 15) * 3600 * 1000;
+  const ut = Date.UTC(yyyy, mm - 1, dd, hh, mi, 0) - tzOffsetMs;
+  const days = (ut - J2000) / 86400000;
 
   const pos = getPlanetPosition(planet, days);
   const gmst = getGMST(days);
 
-  // Longitude where planet is at MC
+  // LST at the birth place = GMST + east longitude
+  // MC is at the longitude where the planet's RA = LST, i.e.
+  //   east_lng = RA - GMST
   let L_MC = ((pos.RA - gmst) % 360 + 540) % 360 - 180; // normalize to [-180, 180]
 
   return { L_MC, Dec: pos.Dec, RA: pos.RA, L: pos.L };
@@ -2104,7 +2160,7 @@ function animateGroup(group) {
 // ============================================================
 //  BUILD MAP (compute & draw lines)
 // ============================================================
-function buildMap(birthDate) {
+function buildMap(birthDate, birthTime, birthCoords) {
   isAnimating = true;
   hideClickTooltip();
 
@@ -2114,10 +2170,12 @@ function buildMap(birthDate) {
     planetGroups[pid] = null;
   }
 
+  const birthLng = (birthCoords && typeof birthCoords.lng === 'number') ? birthCoords.lng : 0;
+
   PLANETS.forEach((planet, pIdx) => {
     if (!visiblePlanets[planet.id]) return;
 
-    const lines = getPlanetLines(planet, birthDate);
+    const lines = getPlanetLines(planet, birthDate, birthTime, birthLng);
     const group = L.featureGroup().addTo(map);
 
     const lineConfigs = [
@@ -2559,6 +2617,22 @@ function formatInput(v) {
   return s;
 }
 
+// Time of birth: "HH:MM" (24h). Empty = no time given (use 12:00 default).
+// Accepts partial input: "1", "14", "14:", "14:3" — completes as you type.
+function validateTime(str) {
+  if (!str) return true; // empty is OK, we default to 12:00
+  const m = str.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return false;
+  const h = +m[1], mi = +m[2];
+  return h >= 0 && h <= 23 && mi >= 0 && mi <= 59;
+}
+
+function formatTimeInput(v) {
+  let s = v.replace(/[^\d]/g, '').slice(0, 4);
+  if (s.length > 2) s = s.slice(0, 2) + ':' + s.slice(2);
+  return s;
+}
+
 // ============================================================
 //  LANGUAGE
 // ============================================================
@@ -2572,12 +2646,16 @@ function applyLang() {
   document.getElementById('subtitle').textContent = t.subtitle;
   document.getElementById('dateLabel').textContent = t.dateLabel;
   document.getElementById('dateInput').placeholder = t.placeholder;
-  document.getElementById('countryLabel').textContent = t.countryLabel;
-  document.getElementById('countryInput').placeholder = t.countryPlaceholder;
+  document.getElementById('birthPlaceLabel').textContent = t.birthPlaceLabel;
+  document.getElementById('birthPlaceInput').placeholder = t.birthPlacePlaceholder;
+  document.getElementById('birthTimeLabel').textContent = t.birthTimeLabel;
+  document.getElementById('birthTimeInput').placeholder = t.birthTimePlaceholder;
   document.getElementById('cityLabel').textContent = t.cityLabel;
   document.getElementById('cityInput').placeholder = t.cityPlaceholder;
+  document.getElementById('formHint').textContent = t.formHint;
   document.getElementById('calcBtn').textContent = t.calcBtn;
   document.getElementById('errorMsg').textContent = t.error;
+  document.getElementById('timeErrorMsg').textContent = t.timeError;
   document.getElementById('geoErrorMsg').textContent = t.geoError;
   document.getElementById('legendTitle').textContent = t.legendTitle;
   document.getElementById('mcLabel').textContent = t.mcLabel;
@@ -2910,10 +2988,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Form handling
   const input = document.getElementById('dateInput');
-  const countryInput = document.getElementById('countryInput');
+  const birthPlaceInput = document.getElementById('birthPlaceInput');
+  const birthTimeInput = document.getElementById('birthTimeInput');
   const cityInput = document.getElementById('cityInput');
   const form = document.getElementById('birthForm');
   const err = document.getElementById('errorMsg');
+  const timeErr = document.getElementById('timeErrorMsg');
   const geoErr = document.getElementById('geoErrorMsg');
   const calcBtn = document.getElementById('calcBtn');
   const originalBtnText = calcBtn.textContent;
@@ -2937,7 +3017,30 @@ document.addEventListener('DOMContentLoaded', () => {
     err.classList.remove('show');
   });
 
-  countryInput.addEventListener('input', () => {
+  // Time of birth: live format mask "HH:MM"
+  birthTimeInput.addEventListener('input', () => {
+    const caret = birthTimeInput.selectionStart;
+    const before = birthTimeInput.value;
+    birthTimeInput.value = formatTimeInput(birthTimeInput.value);
+    const diff = birthTimeInput.value.length - before.length;
+    const pos = Math.max(0, caret + diff);
+    try { birthTimeInput.setSelectionRange(pos, pos); } catch {}
+    timeErr.classList.remove('show');
+  });
+  // On blur: if user typed only digits like "1430", normalize to "14:30"
+  birthTimeInput.addEventListener('blur', () => {
+    const v = birthTimeInput.value.trim();
+    if (v && !v.includes(':') && v.length === 4 && /^\d{4}$/.test(v)) {
+      birthTimeInput.value = v.slice(0, 2) + ':' + v.slice(2);
+    }
+    if (v && !validateTime(birthTimeInput.value)) {
+      timeErr.classList.add('show');
+    } else {
+      timeErr.classList.remove('show');
+    }
+  });
+
+  birthPlaceInput.addEventListener('input', () => {
     geoErr.classList.remove('show');
   });
   cityInput.addEventListener('input', () => {
@@ -2954,21 +3057,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     err.classList.remove('show');
 
+    const timeVal = birthTimeInput.value.trim();
+    if (timeVal && !validateTime(timeVal)) {
+      timeErr.classList.add('show');
+      birthTimeInput.focus();
+      return;
+    }
+    timeErr.classList.remove('show');
+
     const [dd, mm, yyyy] = val.split('.');
     const date = new Date(+yyyy, +mm - 1, +dd);
-    buildMap(date);
-    history.replaceState(null, '', '#' + encodeURIComponent(val));
+    const birthPlaceVal = birthPlaceInput.value.trim();
+    const cityVal = cityInput.value.trim();
 
-    // Optional: city / country geocoding for destiny analysis
-    const country = countryInput.value.trim();
-    const city = cityInput.value.trim();
-    // Nominatim understands "city, country", "city", or "country" alone
-    const query = [city, country].filter(Boolean).join(', ');
-
-    if (query) {
-      setLoading(true);
+    // Geocode place of birth (optional). If absent, falls back to lng=0
+    // in getPlanetLines — chart will be noon-UT-Greenwich which is fine
+    // as a default for the simplified mean-motion model.
+    setLoading(true);
+    let birthCoords = null;
+    if (birthPlaceVal) {
       geoErr.classList.remove('show');
-      const loc = await geocode(query);
+      birthCoords = await geocode(birthPlaceVal);
+      if (!birthCoords) {
+        setLoading(false);
+        geoErr.classList.add('show');
+        birthPlaceInput.focus();
+        return;
+      }
+      // Nominatim's 1-req/sec rule: pause before the next lookup.
+      if (cityVal && cityVal !== birthPlaceVal) {
+        await new Promise(r => setTimeout(r, 1100));
+      }
+    }
+
+    // Build the astromap with the proper birth time + longitude
+    buildMap(date, timeVal, birthCoords);
+    // Save full state to hash so the link is shareable: #date|time|place
+    const hashParts = [val, timeVal, birthPlaceVal].filter(Boolean);
+    history.replaceState(null, '', '#' + encodeURIComponent(hashParts.join('|')));
+
+    // Optional: residence / desired city for destiny analysis
+    if (cityVal) {
+      geoErr.classList.remove('show');
+      const loc = await geocode(cityVal);
       setLoading(false);
       if (!loc) {
         geoErr.classList.add('show');
@@ -2991,6 +3122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1300);
       }, 2200);
     } else {
+      setLoading(false);
       clearDestiny();
     }
   });
@@ -2998,21 +3130,42 @@ document.addEventListener('DOMContentLoaded', () => {
   // Destiny card close
   document.getElementById('destinyClose').addEventListener('click', clearDestiny);
 
-  // Hash init
-  const hashDate = decodeURIComponent(window.location.hash.replace('#', ''));
-  if (hashDate && validateDate(hashDate)) {
-    input.value = hashDate;
-    const [dd, mm, yyyy] = hashDate.split('.');
-    const date = new Date(+yyyy, +mm - 1, +dd);
-    setTimeout(() => buildMap(date), 300);
+  // Hash init — format: #DD.MM.YYYY or #DD.MM.YYYY|HH:MM|birthplace
+  const rawHash = decodeURIComponent(window.location.hash.replace('#', ''));
+  if (rawHash) {
+    const hashParts = rawHash.split('|');
+    const hashDate = hashParts[0];
+    const hashTime = hashParts[1] || '';
+    const hashPlace = hashParts[2] || '';
+    if (validateDate(hashDate)) {
+      input.value = hashDate;
+      if (hashTime && validateTime(hashTime)) birthTimeInput.value = hashTime;
+      if (hashPlace) birthPlaceInput.value = hashPlace;
+      // Auto-build on first paint if we have a date
+      setTimeout(() => {
+        if (hashPlace) {
+          // Async build with geocoded coords
+          (async () => {
+            const coords = await geocode(hashPlace);
+            const [dd, mm, yyyy] = hashDate.split('.').map(Number);
+            buildMap(new Date(yyyy, mm - 1, dd), hashTime, coords);
+          })();
+        } else {
+          const [dd, mm, yyyy] = hashDate.split('.').map(Number);
+          buildMap(new Date(yyyy, mm - 1, dd), hashTime, null);
+        }
+      }, 300);
+    }
   }
 
-  // Check URL for ?country= or ?city= param
+  // Check URL params: ?place=, ?time=, ?city=
   const urlParams = new URLSearchParams(window.location.search);
-  const countryParam = urlParams.get('country');
+  const placeParam = urlParams.get('place');
+  const timeParam = urlParams.get('time');
   const cityParam = urlParams.get('city');
-  if (countryParam) countryInput.value = countryParam;
-  if (cityParam) cityInput.value = cityParam;
+  if (placeParam && !birthPlaceInput.value) birthPlaceInput.value = placeParam;
+  if (timeParam && !birthTimeInput.value && validateTime(timeParam)) birthTimeInput.value = timeParam;
+  if (cityParam && !cityInput.value) cityInput.value = cityParam;
 
   // Update isMobile on resize
   window.addEventListener('resize', () => {
