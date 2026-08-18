@@ -363,42 +363,6 @@ body {
 .theme-icon { transition: transform 0.3s ease; }
 .toggle-btn:active .theme-icon { transform: rotate(180deg); }
 
-/* ===== Page Navigation ===== */
-.page-nav {
-  display: flex; gap: 4px;
-  max-width: 480px; margin: 0 auto 20px;
-  padding: 4px;
-  border-radius: 50px;
-  box-shadow: 0 6px 20px var(--card-shadow);
-  animation: fadeUp 0.4s ease both 0.05s;
-}
-@media (min-width: 640px) {
-  .page-nav { max-width: 520px; margin-bottom: 24px; }
-}
-.page-nav-item {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px 12px;
-  border-radius: 50px;
-  font-size: 12px; font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-  white-space: nowrap;
-}
-@media (min-width: 640px) {
-  .page-nav-item { font-size: 13px; padding: 10px 16px; gap: 8px; }
-}
-.page-nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-@media (min-width: 640px) {
-  .page-nav-item svg { width: 16px; height: 16px; }
-}
-.page-nav-item:hover { color: var(--text-primary); }
-.page-nav-item.active {
-  background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
-  color: white;
-  box-shadow: 0 4px 12px var(--btn-shadow);
-}
-
 /* ===== Header ===== */
 .header { text-align: center; margin-bottom: 24px; }
 @media (min-width: 640px) { .header { margin-bottom: 32px; } }
@@ -566,17 +530,13 @@ body {
   background: linear-gradient(135deg, var(--cell-pink-bg-1), var(--cell-pink-bg-2));
   border: 1px solid var(--cell-pink-border);
 }
-.m-cell.date-cell {
+.m-cell.info-cell {
   background: linear-gradient(135deg, var(--cell-date-bg-1), var(--cell-date-bg-2));
   border: 1px solid var(--cell-date-border);
+  align-items: flex-start; justify-content: center;
+  padding: 10px 12px; gap: 4px;
 }
-.m-cell.empty-cell {
-  background: transparent;
-  border: 1px solid transparent;
-  min-height: 0;
-  padding: 0;
-  pointer-events: none;
-}
+@media (min-width: 640px) { .m-cell.info-cell { padding: 14px 16px; } }
 
 .m-cell .label {
   font-size: 8px; font-weight: 500; color: var(--text-muted);
@@ -596,12 +556,18 @@ body {
 .m-cell.lilac .value { color: var(--accent-lilac-dark); }
 .m-cell.pink .value { color: var(--accent-pink-dark); }
 .m-cell .value.empty { color: var(--cell-empty-color); font-weight: 300; }
-.m-cell.date-cell .date-text {
-  font-size: 14px; font-weight: 600; color: var(--accent-lilac-dark); letter-spacing: 0.02em;
-}
-@media (min-width: 640px) { .m-cell.date-cell .date-text { font-size: 16px; } }
 
-.col-span-2 { grid-column: span 2; }
+.m-cell.info-cell .info-line {
+  font-size: 11px; font-weight: 500; color: var(--accent-lilac-dark); line-height: 1.5;
+  text-align: left;
+}
+@media (min-width: 640px) { .m-cell.info-cell .info-line { font-size: 13px; } }
+.m-cell.info-cell .info-key {
+  font-weight: 600; text-transform: uppercase; font-size: 9px; letter-spacing: 0.03em;
+  color: var(--text-muted); margin-right: 4px;
+}
+@media (min-width: 640px) { .m-cell.info-cell .info-key { font-size: 10px; } }
+
 .col-span-3 { grid-column: span 3; }
 
 /* Stagger animation for cells */
@@ -894,18 +860,6 @@ body {
 </div>
 
 <div class="container">
-  <!-- Page Navigation -->
-  <nav class="page-nav glass" aria-label="Навигация по сайту">
-    <a class="page-nav-item active" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-      <span>Психоматрица</span>
-    </a>
-    <a class="page-nav-item" href="map.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      <span>Карта планет</span>
-    </a>
-  </nav>
-
   <!-- Header -->
   <header class="header">
     <div class="header-icon-wrap">
@@ -975,13 +929,16 @@ const T = {
     shareLabel: 'Ссылка',
     copied: 'Скопировано!',
     footer: 'Квадрат Пифагора — бесплатный нумерологический расчёт',
-    addNums: 'Доп. числа',
+    addNums: 'Дополнительные числа',
     destiny: 'Число судьбы',
-    temper: 'Темперамент',
+    plotskoe: 'Плотское',
     goal: 'Цель',
     family: 'Семья',
-    habit: 'Привычка',
+    habit: 'Стабильность',
     everyday: 'Быт',
+    selfEsteem: 'Самооценка',
+    talent: 'Талант',
+    spiritual: 'Духовное',
     strong: 'Сильная сторона',
     vulner: 'Уязвимость',
     noDigits: 'нет',
@@ -1015,13 +972,16 @@ const T = {
     shareLabel: 'Link',
     copied: 'Copied!',
     footer: 'Pythagorean Square — free numerological calculation',
-    addNums: 'Add. Numbers',
+    addNums: 'Additional Numbers',
     destiny: 'Destiny',
-    temper: 'Temperament',
+    plotskoe: 'Sensuality',
     goal: 'Goal',
     family: 'Family',
-    habit: 'Habit',
+    habit: 'Stability',
     everyday: 'Everyday',
+    selfEsteem: 'Self-Esteem',
+    talent: 'Talent',
+    spiritual: 'Spirituality',
     strong: 'Strength',
     vulner: 'Vulnerability',
     noDigits: 'none',
@@ -1086,11 +1046,14 @@ function calculate(dateStr) {
     working,
     counts,
     destinyNumber: sum2,
-    temperament: (counts[1]>0?1:0) + (counts[4]>0?1:0) + (counts[7]>0?1:0),
+    plotskoe: counts[7] + counts[5] + counts[3],
     goal: counts[1] + counts[4] + counts[7],
     family: counts[2] + counts[5] + counts[8],
     habit: counts[3] + counts[6] + counts[9],
-    everyday: (counts[4]>0?1:0) + (counts[5]>0?1:0) + (counts[6]>0?1:0)
+    selfEsteem: counts[1] + counts[2] + counts[3],
+    everyday: counts[4] + counts[5] + counts[6],
+    talent: counts[7] + counts[8] + counts[9],
+    spiritual: counts[1] + counts[5] + counts[9]
   };
 }
 
@@ -1133,15 +1096,20 @@ function updateThemeIcon() {
 }
 
 // ===== RENDER =====
+function infoCellHtml(t, dateStr, addNumsStr, destinyVal) {
+  return `<div class="m-cell info-cell col-span-3">
+    <div class="info-line"><span class="info-key">${t.dateLabel}:</span> ${dateStr}</div>
+    <div class="info-line"><span class="info-key">${t.addNums}:</span> ${addNumsStr}</div>
+    <div class="info-line"><span class="info-key">${t.destiny}:</span> ${destinyVal}</div>
+  </div>`;
+}
+
 function renderEmptyGrid() {
   const t = T[lang];
   const grid = document.getElementById('matrixGrid');
-  // Default date placeholder
-  const emptyDate = lang === 'ru' ? '__.__.____' : '__.__.____';
+  const emptyDate = '__.__.____';
   const cells = [
-    { label: t.addNums, value: '—', type: 'lilac', span: 2 },
-    { label: t.destiny, value: '—', type: 'lilac' },
-    { label: t.temper, value: '—', type: 'lilac' },
+    { label: t.plotskoe, value: '—', type: 'lilac' },
     { label: t.descs[1].name, value: '—', count: 0, type: 'pink' },
     { label: t.descs[4].name, value: '—', count: 0, type: 'pink' },
     { label: t.descs[7].name, value: '—', count: 0, type: 'pink' },
@@ -1154,17 +1122,14 @@ function renderEmptyGrid() {
     { label: t.descs[6].name, value: '—', count: 0, type: 'pink' },
     { label: t.descs[9].name, value: '—', count: 0, type: 'pink' },
     { label: t.habit, value: '—', type: 'lilac' },
-    { label: '', value: '', type: 'empty' },
+    { label: t.selfEsteem, value: '—', type: 'lilac' },
     { label: t.everyday, value: '—', type: 'lilac' },
-    { label: '', value: emptyDate, type: 'date', span: 2 },
+    { label: t.talent, value: '—', type: 'lilac' },
+    { label: t.spiritual, value: '—', type: 'lilac' },
   ];
 
-  grid.innerHTML = cells.map(cell => {
-    const spanClass = cell.span === 2 ? ' col-span-2' : cell.span === 3 ? ' col-span-3' : '';
-    const typeClass = cell.type === 'date' ? 'date-cell' : cell.type === 'empty' ? 'empty-cell' : cell.type;
-    if (cell.type === 'empty') return '<div class="m-cell empty-cell"></div>';
-    if (cell.type === 'date') return `<div class="m-cell ${typeClass}${spanClass}"><span class="date-text">${cell.value}</span></div>`;
-    return `<div class="m-cell ${typeClass}${spanClass}"><span class="label">${cell.label}</span><span class="value empty">${cell.value}</span></div>`;
+  grid.innerHTML = infoCellHtml(t, emptyDate, '—', '—') + cells.map(cell => {
+    return `<div class="m-cell ${cell.type}"><span class="label">${cell.label}</span><span class="value empty">${cell.value}</span></div>`;
   }).join('');
 
   document.getElementById('wnGrid').innerHTML = '';
@@ -1177,9 +1142,7 @@ function renderAll(data, dateStr) {
   const grid = document.getElementById('matrixGrid');
   const c = data.counts;
   const cells = [
-    { label: t.addNums, value: data.working.join(','), type: 'lilac', span: 2 },
-    { label: t.destiny, value: data.destinyNumber, type: 'lilac' },
-    { label: t.temper, value: data.temperament, type: 'lilac' },
+    { label: t.plotskoe, value: data.plotskoe, type: 'lilac' },
     { label: t.descs[1].name, value: digitString(1, c[1]), count: c[1], type: 'pink' },
     { label: t.descs[4].name, value: digitString(4, c[4]), count: c[4], type: 'pink' },
     { label: t.descs[7].name, value: digitString(7, c[7]), count: c[7], type: 'pink' },
@@ -1192,24 +1155,16 @@ function renderAll(data, dateStr) {
     { label: t.descs[6].name, value: digitString(6, c[6]), count: c[6], type: 'pink' },
     { label: t.descs[9].name, value: digitString(9, c[9]), count: c[9], type: 'pink' },
     { label: t.habit, value: data.habit, type: 'lilac' },
-    { label: '', value: '', type: 'empty' },
+    { label: t.selfEsteem, value: data.selfEsteem, type: 'lilac' },
     { label: t.everyday, value: data.everyday, type: 'lilac' },
-    { label: '', value: dateStr, type: 'date', span: 2 },
+    { label: t.talent, value: data.talent, type: 'lilac' },
+    { label: t.spiritual, value: data.spiritual, type: 'lilac' },
   ];
 
-  grid.innerHTML = cells.map(cell => {
-    const spanClass = cell.span === 2 ? ' col-span-2' : cell.span === 3 ? ' col-span-3' : '';
-    const typeClass = cell.type === 'date' ? 'date-cell' : cell.type === 'empty' ? 'empty-cell' : cell.type;
-    const isEmpty = cell.count === 0 || cell.value === '' || cell.value === 0;
+  grid.innerHTML = infoCellHtml(t, dateStr, data.working.join(' '), data.destinyNumber) + cells.map(cell => {
+    const isEmpty = cell.type === 'pink' ? cell.count === 0 : cell.value === '' || cell.value == null;
     const valueClass = isEmpty ? 'value empty' : 'value';
-
-    if (cell.type === 'empty') {
-      return '<div class="m-cell empty-cell"></div>';
-    }
-    if (cell.type === 'date') {
-      return `<div class="m-cell ${typeClass}${spanClass}"><span class="date-text">${cell.value}</span></div>`;
-    }
-    return `<div class="m-cell ${typeClass}${spanClass}"><span class="label">${cell.label}</span><span class="${valueClass}">${isEmpty ? '—' : cell.value}</span></div>`;
+    return `<div class="m-cell ${cell.type}"><span class="label">${cell.label}</span><span class="${valueClass}">${isEmpty ? '—' : cell.value}</span></div>`;
   }).join('');
 
   document.getElementById('wnGrid').innerHTML = data.working.map((n, i) =>
